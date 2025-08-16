@@ -1,8 +1,11 @@
 <div align="center">
   <h1>ShelfWise</h1>
   <p>A Modern Book Marketplace for Readers and Authors</p>
-  <a href="https://github.com/firebase/ShelfWise">
-    <img src="https://img.shields.io/badge/GitHub-View%20on%20GitHub-blue?logo=github" alt="View on GitHub">
+  [![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)](https://github.com/debadyutidey007/Book_Store_Management)
+[![GitHub stars](https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social)](https://github.com/debadyutidey007/Book_Store_Management/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social)](https://github.com/debadyutidey007/Book_Store_Management/network/members)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Repo Size](https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management)](https://github.com/debadyutidey007/Book_Store_Management)
   </a>
 </div>
 
