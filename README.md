@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social&label=Stars" alt="GitHub Stars">
   <img src="https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social&label=Fork" alt="GitHub Forks">
   <img src="https://img.shields.io/github/license/debadyutidey007/Book_Store_Management.svg" alt="License">
-  <img src="https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management.svg" alt="Repository Size">
+  <img src="https://img.shields.io/github/size/debadyutidey007/Book_Store_Management/main.svg" alt="Repository Size">
 
 ## Introduction
 
@@ -61,3 +61,4 @@ Here's a detailed breakdown of the core features:
 1.  **User Authentication:** Secure login and registration processes for both readers and authors.
 2.  **Role-Based Access:** The platform provides different interfaces and functionalities based on whether a user is a reader or an author.
 3.  **Admin Panel:** An administrative panel for managing users, books, and platform settings (details of admin features are outlined in the blueprint).
+
