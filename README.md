@@ -5,10 +5,10 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version">
-  <img src="https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social&label=Stars" alt="GitHub Stars">
-  <img src="https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social&label=Fork" alt="GitHub Forks">
-  <img src="https://img.shields.io/github/license/debadyutidey007/Book_Store_Management.svg" alt="License">
-  <img src="https://img.shields.io/github/size/debadyutidey007/Book_Store_Management/main.svg" alt="Repository Size">
+  <img src="https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social&#x26;label=Stars" alt="GitHub Stars">
+  <img src="https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social&#x26;label=Fork" alt="GitHub Forks">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+  <img src="https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management.svg" alt="Repository Size">
 
 ## Introduction
 
