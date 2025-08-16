@@ -1,24 +1,34 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { BookOpenCheck } from "lucide-react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
-const TwitterIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M22 4s-.7 2.1-2 3.4c1.6 1.4 3.3 4.9 3 7.1 0 .5-.2 1.1-.4 1.5-.2.4-.4.8-.7 1.1-.3.3-.6.6-1 .8-.5.2-1 .3-1.5.3H4s-4.4-1.2-5-5c0 0 3.5 1.5 6.5 1.5-1-2.5-1.5-5.5.5-7.5C7 4 11 4 13 4s4-1 4-1z" />
-  </svg>
+
+const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
 );
 
 const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -39,6 +49,28 @@ const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const ClashOfClansIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg 
+    {...props}
+    xmlns="http://www.w3.org/2000/svg" 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    stroke="#D4AF37"
+    strokeWidth="1"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3z" fill="#4a4a4a"/>
+    <path d="M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3z" stroke="#C0C0C0" strokeWidth="0.5" fill="none"/>
+    <path d="M12 12l3-1.5-3-1.5-3 1.5 3 1.5z" fill="#D4AF37" />
+    <path d="M12 12v4l3 1.5v-4l-3-1.5z" fill="#B8860B" />
+    <path d="M12 12v4l-3 1.5v-4l3-1.5z" fill="#DAA520" />
+ </svg>
+);
+
+
 export default function Footer() {
   const [year, setYear] = useState(new Date().getFullYear());
   
@@ -57,22 +89,54 @@ export default function Footer() {
           <p className="text-sm text-muted-foreground">
             © {year} ShelfWise. All rights reserved.
           </p>
-          <div className="flex items-center space-x-4 mt-4 md:mt-0">
-            <Link
-              href="#"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <TwitterIcon className="h-5 w-5" />
-              <span className="sr-only">Twitter</span>
-            </Link>
-            <Link
-              href="#"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <GithubIcon className="h-5 w-5" />
-              <span className="sr-only">GitHub</span>
-            </Link>
-          </div>
+          <TooltipProvider>
+            <div className="flex items-center space-x-4 mt-4 md:mt-0">
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Link
+                            href="https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=G0LPLP8J0"
+                            className="text-muted-foreground hover:text-foreground transition-transform duration-300 hover:scale-110"
+                        >
+                            <ClashOfClansIcon className="h-5 w-5" />
+                            <span className="sr-only">Clash of Clans</span>
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>My Clash Of Clans Account....</p>
+                    </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                         <Link
+                            href="https://www.instagram.com/debadyutidey7?igsh=eGdlYm93c3ZxYjUy"
+                            className="text-muted-foreground hover:text-foreground transition-transform duration-300 hover:scale-110"
+                            >
+                            <InstagramIcon className="h-5 w-5" />
+                            <span className="sr-only">Instagram</span>
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>My Instagram Account....</p>
+                    </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Link
+                            href="https://github.com/debadyutidey007/Book_Store_Management"
+                            className="text-muted-foreground hover:text-foreground transition-transform duration-300 hover:scale-110"
+                        >
+                            <GithubIcon className="h-5 w-5" />
+                            <span className="sr-only">GitHub</span>
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>My GitHub Account....</p>
+                    </TooltipContent>
+                </Tooltip>
+            </div>
+          </TooltipProvider>
         </div>
       </div>
     </footer>
