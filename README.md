@@ -34,7 +34,7 @@ Here's a detailed breakdown of the core features:
     *   **Digital Library:** Purchased digital books are accessible through the reader's personal digital library on the platform, allowing them to read their books anytime, anywhere.
 
 4.  **Community Interaction:**
-    *   **Reviews and Ratings:** Readers can leave reviews and ratings for books they have read, contributing to the community and helping other readers discover new titles.
+    *   **Reviews and Ratings:** Readers can leave reviews and ratings for books as well as gift a particular book to someone else's reader account by gifting them the book using the donor's own credit/debit card purchase which they have read, contributing to the community and helping other readers discover new titles.
 
 ### For Authors:
 
@@ -55,4 +55,4 @@ Here's a detailed breakdown of the core features:
 
 1.  **User Authentication:** Secure login and registration processes for both readers and authors.
 2.  **Role-Based Access:** The platform provides different interfaces and functionalities based on whether a user is a reader or an author.
-3.  **Admin Panel:** An administrative panel for managing users, books, and platform settings (details of admin features are outlined in the blueprint).
+3.  **Admin Panel:** An administrative panel for managing users, books, and platform settings.
