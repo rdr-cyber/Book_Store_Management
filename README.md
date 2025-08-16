@@ -1,13 +1,14 @@
 <div align="center">
   <h1>ShelfWise</h1>
   <p>A Modern Book Marketplace for Readers and Authors</p>
-  [![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)](https://github.com/debadyutidey007/Book_Store_Management)
-[![GitHub stars](https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social)](https://github.com/debadyutidey007/Book_Store_Management/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social)](https://github.com/debadyutidey007/Book_Store_Management/network/members)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Repo Size](https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management)](https://github.com/debadyutidey007/Book_Store_Management)
-  </a>
 </div>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social&label=Stars" alt="GitHub Stars">
+  <img src="https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social&label=Fork" alt="GitHub Forks">
+  <img src="https://img.shields.io/github/license/debadyutidey007/Book_Store_Management.svg" alt="License">
+  <img src="https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management.svg" alt="Repository Size">
 
 ## Introduction
 
@@ -37,9 +38,10 @@ Here's a detailed breakdown of the core features:
     *   **Digital Library:** Purchased digital books are accessible through the reader's personal digital library on the platform, allowing them to read their books anytime, anywhere.
 
 4.  **Community Interaction:**
-    *   **Reviews and Ratings:** Readers can leave reviews and ratings for books as well as gift a particular book to someone else's reader account by gifting them the book using the donor's own credit/debit card purchase which they have read, contributing to the community and helping other readers discover new titles.
+    *   **Reviews and Ratings:** Readers can leave reviews and ratings for books they have read, contributing to the community and helping other readers discover new titles.
 
 ### For Authors:
+    *   **Gifting:** Readers can share their favorite books with friends and family by gifting digital copies to other users on the platform.
 
 1.  **Easy Book Publishing:**
     *   Authors can easily upload and publish their books through a guided process. The platform supports various e-book formats.
@@ -58,4 +60,4 @@ Here's a detailed breakdown of the core features:
 
 1.  **User Authentication:** Secure login and registration processes for both readers and authors.
 2.  **Role-Based Access:** The platform provides different interfaces and functionalities based on whether a user is a reader or an author.
-3.  **Admin Panel:** An administrative panel for managing users, books, and platform settings.
+3.  **Admin Panel:** An administrative panel for managing users, books, and platform settings (details of admin features are outlined in the blueprint).
