@@ -3,12 +3,15 @@
   <p>A Modern Book Marketplace for Readers and Authors</p>
 </div>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version">
-  <img src="https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social&#x26;label=Stars" alt="GitHub Stars">
-  <img src="https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social&#x26;label=Fork" alt="GitHub Forks">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
-  <img src="https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management" alt="Repository Size">
+<div align="center">
+
+    [![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)](https://github.com/debadyutidey007/Currency_Convertor_And_Purchase_Power_Parity_Calculator)
+    [![GitHub stars](https://img.shields.io/github/stars/debadyutidey007/Currency_Convertor_And_Purchase_Power_Parity_Calculator.svg?style=social)](https://github.com/debadyutidey007/Currency_Convertor_And_Purchase_Power_Parity_Calculator/stargazers)
+    [![GitHub forks](https://img.shields.io/github/forks/debadyutidey007/Currency_Convertor_And_Purchase_Power_Parity_Calculator.svg?style=social)](https://github.com/debadyutidey007/Currency_Convertor_And_Purchase_Power_Parity_Calculator/network/members)
+    [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+    [![Repo Size](https://img.shields.io/github/repo-size/debadyutidey007/Currency_Convertor_And_Purchase_Power_Parity_Calculator)](https://github.com/debadyutidey007/Currency_Convertor_And_Purchase_Power_Parity_Calculator)
+
+</div>
 
 ## Introduction
 
