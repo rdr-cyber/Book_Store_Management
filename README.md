@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social&#x26;label=Stars" alt="GitHub Stars">
   <img src="https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social&#x26;label=Fork" alt="GitHub Forks">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
-  <img src="https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management.svg" alt="Repository Size">
+  <img src="https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management" alt="Repository Size">
 
 ## Introduction
 
