@@ -3,16 +3,6 @@
   <p>A Modern Book Marketplace for Readers and Authors</p>
 </div>
 
-<div align="center">
-
-[![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)](https://github.com/debadyutidey007/Book_Store_Management)
-[![GitHub stars](https://img.shields.io/github/stars/debadyutidey007/Book_Store_Management.svg?style=social)](https://github.com/debadyutidey007/Book_Store_Management/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/debadyutidey007/Book_Store_Management.svg?style=social)](https://github.com/debadyutidey007/Book_Store_Management/network/members)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Repo Size](https://img.shields.io/github/repo-size/debadyutidey007/Book_Store_Management)](https://github.com/debadyutidey007/Book_Store_Management)
-
-</div>
-
 ## Introduction
 
 ShelfWise is a dynamic and user-friendly online platform designed to connect readers with a diverse range of books and empower authors to publish their work independently. Built with modern technologies and focusing on a clean, intuitive user experience, ShelfWise aims to be the go-to destination for discovering new stories and supporting independent authors.
