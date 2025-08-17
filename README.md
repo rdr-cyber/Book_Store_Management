@@ -39,16 +39,13 @@ Here's a detailed breakdown of the core features:
     *   Authors can easily upload and publish their books through a guided process. The platform supports various e-book formats.
     *   Authors can provide all necessary book details, including title, genre, description, cover image, and pricing.
 
-2.  **Sales Tracking and Analytics:**
-    *   Authors have access to a dashboard where they can track their book sales, view analytics, and monitor their earnings. This provides valuable insights into their book's performance.
+2.  **Sales Tracking and Analytics:** Authors have access to a dashboard where they can track their book sales, view analytics, and monitor their earnings. This provides valuable insights into their book's performance.
 
-3.  **Royalty Management:**
-    *   ShelfWise handles royalty calculations and payments to authors, providing a transparent and efficient system for authors to receive their earnings.
+1.  **Royalty Management:** ShelfWise handles royalty calculations and payments to authors, providing a transparent and efficient system for authors to receive their earnings.
 
-4. **Gifting:** Readers can share their favorite books with friends and family by gifting digital copies to other users on the platform.
+2. **Gifting:** Readers can share their favorite books with friends and family by gifting digital copies to other users on the platform.
 
-5.  **Author Profile:**
-    *   Authors can create a profile page to showcase their work, share information about themselves, and connect with readers.
+3.  **Author Profile:** Authors can create a profile page to showcase their work, share information about themselves, and connect with readers.
 
 ### Shared Features:
 
