@@ -385,8 +385,16 @@ body {
   left: -3rem;
 }
 
+.-right-1 {
+  right: -.25rem;
+}
+
 .-right-12 {
   right: -3rem;
+}
+
+.-top-1 {
+  top: -.25rem;
 }
 
 .-top-12 {
@@ -459,6 +467,10 @@ body {
 
 .top-4 {
   top: 1rem;
+}
+
+.top-6 {
+  top: 1.5rem;
 }
 
 .top-\[50\%\] {

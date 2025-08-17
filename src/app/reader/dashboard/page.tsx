@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +32,7 @@ export default function ReaderDashboard() {
   const [receivedGifts, setReceivedGifts] = useState<HydratedGift[]>([]);
   const [hasMounted, setHasMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setHasMounted(true);
@@ -38,6 +40,12 @@ export default function ReaderDashboard() {
         const loggedInUserString = localStorage.getItem('loggedInUser');
         if (loggedInUserString) {
             const loggedInUser: User = JSON.parse(loggedInUserString);
+
+            if (loggedInUser.role !== 'reader') {
+                router.push('/login?role=reader');
+                return;
+            }
+
             setUser(loggedInUser);
 
             const allPublishedBooks: BookType[] = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
@@ -73,6 +81,7 @@ export default function ReaderDashboard() {
 
 
         } else {
+            router.push('/login?role=reader');
             setLibraryBooks([]);
             setFollowedAuthorBooks([]);
             setReceivedGifts([]);
@@ -82,9 +91,9 @@ export default function ReaderDashboard() {
         setFollowedAuthorBooks([]);
         setReceivedGifts([]);
     }
-  }, []);
+  }, [router]);
 
-  if (!hasMounted) {
+  if (!hasMounted || !user) {
       return null; // Or a loading skeleton
   }
 

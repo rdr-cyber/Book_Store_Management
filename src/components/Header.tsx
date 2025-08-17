@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -14,6 +15,7 @@ import {
   Home,
   Book,
   Wand2,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,20 +57,56 @@ type UserInfo = {
 export default function Header() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [hasMounted, setHasMounted] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
     setHasMounted(true);
-    try {
-      const loggedInUser = localStorage.getItem('loggedInUser');
-      if (loggedInUser) {
-          setUser(JSON.parse(loggedInUser));
-      } else {
-          setUser(null);
-      }
-    } catch (error) {
-        // In case of parsing error, reset user
-        setUser(null);
+
+    const updateUserState = () => {
+        try {
+          const loggedInUser = localStorage.getItem('loggedInUser');
+          if (loggedInUser) {
+              setUser(JSON.parse(loggedInUser));
+          } else {
+              setUser(null);
+          }
+        } catch (error) {
+            setUser(null);
+        }
+    };
+
+    const updateCartCount = () => {
+        try {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            setCartCount(cart.length);
+        } catch (error) {
+            setCartCount(0);
+        }
+    };
+    
+    updateUserState();
+    updateCartCount();
+
+    const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === 'loggedInUser' || event.key === 'cart') {
+            updateUserState();
+            updateCartCount();
+        }
+    }
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Custom event listener for cart updates from other components
+    const handleCartUpdate = () => {
+        updateCartCount();
+    }
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
+
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        window.removeEventListener('cartUpdated', handleCartUpdate);
     }
   }, []);
 
@@ -77,6 +115,17 @@ export default function Header() {
     localStorage.removeItem('loggedInUser');
     setUser(null);
     router.push('/');
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const searchQuery = formData.get('search') as string;
+    if (searchQuery) {
+        router.push(`/books?q=${encodeURIComponent(searchQuery)}`);
+    } else {
+        router.push('/books');
+    }
   };
   
   if (!hasMounted) {
@@ -92,7 +141,7 @@ export default function Header() {
   
   const role = user?.role;
   const navLinks = role ? navLinksConfig[role] : navLinksConfig.guest;
-  const homePath = role === 'reader' ? '/reader/dashboard' : role === 'author' ? '/author/dashboard' : '/';
+  const homePath = role === 'author' ? '/author/dashboard' : role === 'reader' ? '/reader/dashboard' : '/';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -148,22 +197,28 @@ export default function Header() {
           </div>
           
           {role === 'reader' && (
-             <div className="relative flex-1 md:grow-0">
+             <form onSubmit={handleSearch} className="relative flex-1 md:grow-0">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                 type="search"
+                name="search"
                 placeholder="Search books..."
                 className="w-full rounded-lg bg-secondary pl-8 md:w-[200px] lg:w-[320px]"
                 />
-            </div>
+            </form>
           )}
 
 
           <nav className="flex items-center">
             {role === 'reader' && (
                 <Button variant="ghost" size="icon" asChild>
-                    <Link href="/cart">
+                    <Link href="/cart" className="relative">
                         <ShoppingCart className="h-5 w-5" />
+                        {cartCount > 0 && (
+                             <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                {cartCount}
+                            </span>
+                        )}
                         <span className="sr-only">Shopping Cart</span>
                     </Link>
                 </Button>
@@ -204,6 +259,12 @@ export default function Header() {
                         </Link>
                       </DropdownMenuItem>
                     )}
+                     <DropdownMenuItem asChild>
+                      <Link href="/settings">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                      <DropdownMenuItem onClick={handleLogout}>
                         <LogOut className="mr-2 h-4 w-4" />

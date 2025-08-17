@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -54,6 +55,7 @@ export default function AuthorDashboard() {
   const [followers, setFollowers] = useState(0);
   const [filter, setFilter] = useState<FilterType>('all');
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -79,6 +81,11 @@ export default function AuthorDashboard() {
       const loggedInUser = localStorage.getItem('loggedInUser');
       if (loggedInUser) {
         const parsedUser: UserInfo = JSON.parse(loggedInUser);
+        if (parsedUser.role !== 'author') {
+            router.push('/login?role=author');
+            return;
+        }
+
         setUser(parsedUser);
 
         // Load books from localStorage
@@ -123,13 +130,15 @@ export default function AuthorDashboard() {
         ).length;
         setFollowers(followerCount);
 
+      } else {
+        router.push('/login?role=author');
       }
     } catch (error) {
         console.error("Error loading author dashboard data:", error);
         setUser(null);
         setAuthorBooks([]);
     }
-  }, [toast]);
+  }, [toast, router]);
   
   const filteredBooks = useMemo(() => {
     if (filter === 'outOfStock') {
@@ -140,6 +149,10 @@ export default function AuthorDashboard() {
     }
     return authorBooks;
   }, [authorBooks, filter]);
+
+  if (!user) {
+    return null; // or a loading skeleton
+  }
 
 
   return (

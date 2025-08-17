@@ -443,6 +443,7 @@ __turbopack_context__.s({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/button.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/card.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$compass$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Compass$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/compass.js [app-client] (ecmascript) <export default as Compass>");
@@ -463,6 +464,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
+;
 function ReaderDashboard() {
     _s();
     const [libraryBooks, setLibraryBooks] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
@@ -470,6 +472,7 @@ function ReaderDashboard() {
     const [receivedGifts, setReceivedGifts] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [hasMounted, setHasMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "ReaderDashboard.useEffect": ()=>{
             setHasMounted(true);
@@ -477,6 +480,10 @@ function ReaderDashboard() {
                 const loggedInUserString = localStorage.getItem('loggedInUser');
                 if (loggedInUserString) {
                     const loggedInUser = JSON.parse(loggedInUserString);
+                    if (loggedInUser.role !== 'reader') {
+                        router.push('/login?role=reader');
+                        return;
+                    }
                     setUser(loggedInUser);
                     const allPublishedBooks = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
                     const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
@@ -525,6 +532,7 @@ function ReaderDashboard() {
                     }["ReaderDashboard.useEffect.hydratedGifts"]);
                     setReceivedGifts(hydratedGifts);
                 } else {
+                    router.push('/login?role=reader');
                     setLibraryBooks([]);
                     setFollowedAuthorBooks([]);
                     setReceivedGifts([]);
@@ -535,8 +543,10 @@ function ReaderDashboard() {
                 setReceivedGifts([]);
             }
         }
-    }["ReaderDashboard.useEffect"], []);
-    if (!hasMounted) {
+    }["ReaderDashboard.useEffect"], [
+        router
+    ]);
+    if (!hasMounted || !user) {
         return null; // Or a loading skeleton
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -550,7 +560,7 @@ function ReaderDashboard() {
                         children: "Reader Dashboard"
                     }, void 0, false, {
                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                        lineNumber: 94,
+                        lineNumber: 103,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -562,13 +572,13 @@ function ReaderDashboard() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                        lineNumber: 95,
+                        lineNumber: 104,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                lineNumber: 93,
+                lineNumber: 102,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -587,19 +597,19 @@ function ReaderDashboard() {
                                                     className: "mr-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 107,
+                                                    lineNumber: 116,
                                                     columnNumber: 21
                                                 }, this),
                                                 "Continue Reading"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                            lineNumber: 106,
+                                            lineNumber: 115,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 105,
+                                        lineNumber: 114,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -615,7 +625,7 @@ function ReaderDashboard() {
                                                     "data-ai-hint": "book cover"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 114,
+                                                    lineNumber: 123,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -625,7 +635,7 @@ function ReaderDashboard() {
                                                             children: libraryBooks[0].title
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                            lineNumber: 123,
+                                                            lineNumber: 132,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -636,7 +646,7 @@ function ReaderDashboard() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                            lineNumber: 126,
+                                                            lineNumber: 135,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -646,35 +656,35 @@ function ReaderDashboard() {
                                                                 children: "Jump Back In"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                                lineNumber: 130,
+                                                                lineNumber: 139,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                            lineNumber: 129,
+                                                            lineNumber: 138,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 122,
+                                                    lineNumber: 131,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                            lineNumber: 113,
+                                            lineNumber: 122,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 111,
+                                        lineNumber: 120,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                lineNumber: 104,
+                                lineNumber: 113,
                                 columnNumber: 13
                             }, this),
                             receivedGifts.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -688,27 +698,27 @@ function ReaderDashboard() {
                                                         className: "mr-3"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                        lineNumber: 145,
+                                                        lineNumber: 154,
                                                         columnNumber: 25
                                                     }, this),
                                                     "Gifts Received"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 144,
+                                                lineNumber: 153,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                 children: "Books that have been gifted to you by other readers."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 148,
+                                                lineNumber: 157,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 143,
+                                        lineNumber: 152,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -721,7 +731,7 @@ function ReaderDashboard() {
                                                             hasAccess: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                            lineNumber: 154,
+                                                            lineNumber: 163,
                                                             columnNumber: 32
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -734,29 +744,29 @@ function ReaderDashboard() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                            lineNumber: 155,
+                                                            lineNumber: 164,
                                                             columnNumber: 32
                                                         }, this)
                                                     ]
                                                 }, gift.id, true, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 153,
+                                                    lineNumber: 162,
                                                     columnNumber: 28
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                            lineNumber: 151,
+                                            lineNumber: 160,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 150,
+                                        lineNumber: 159,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                lineNumber: 142,
+                                lineNumber: 151,
                                 columnNumber: 15
                             }, this),
                             followedAuthorBooks.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -770,27 +780,27 @@ function ReaderDashboard() {
                                                         className: "mr-3"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                        lineNumber: 167,
+                                                        lineNumber: 176,
                                                         columnNumber: 25
                                                     }, this),
                                                     "New From Authors You Follow"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 166,
+                                                lineNumber: 175,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                 children: "The latest books from authors you're following."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 170,
+                                                lineNumber: 179,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 165,
+                                        lineNumber: 174,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -801,23 +811,23 @@ function ReaderDashboard() {
                                                     hasAccess: libraryBooks.some((libBook)=>libBook.id === book.id)
                                                 }, book.id, false, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 175,
+                                                    lineNumber: 184,
                                                     columnNumber: 28
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                            lineNumber: 173,
+                                            lineNumber: 182,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 172,
+                                        lineNumber: 181,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                lineNumber: 164,
+                                lineNumber: 173,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -828,20 +838,20 @@ function ReaderDashboard() {
                                                 children: "My Library"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 184,
+                                                lineNumber: 193,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                 children: "An overview of your purchased books."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 185,
+                                                lineNumber: 194,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 183,
+                                        lineNumber: 192,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -859,17 +869,17 @@ function ReaderDashboard() {
                                                             "data-ai-hint": "book cover"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                            lineNumber: 193,
+                                                            lineNumber: 202,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, book.id, false, {
                                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                        lineNumber: 192,
+                                                        lineNumber: 201,
                                                         columnNumber: 19
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 190,
+                                                lineNumber: 199,
                                                 columnNumber: 15
                                             }, this),
                                             libraryBooks.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -877,13 +887,13 @@ function ReaderDashboard() {
                                                 children: "Your library is empty."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 205,
+                                                lineNumber: 214,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 189,
+                                        lineNumber: 198,
                                         columnNumber: 13
                                     }, this),
                                     libraryBooks.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardFooter"], {
@@ -895,29 +905,29 @@ function ReaderDashboard() {
                                                 children: "View Full Library"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 211,
+                                                lineNumber: 220,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                            lineNumber: 210,
+                                            lineNumber: 219,
                                             columnNumber: 18
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 209,
+                                        lineNumber: 218,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                lineNumber: 182,
+                                lineNumber: 191,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                        lineNumber: 102,
+                        lineNumber: 111,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -934,19 +944,19 @@ function ReaderDashboard() {
                                                     className: "mr-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 223,
+                                                    lineNumber: 232,
                                                     columnNumber: 17
                                                 }, this),
                                                 "Explore"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                            lineNumber: 222,
+                                            lineNumber: 231,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 221,
+                                        lineNumber: 230,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -960,12 +970,12 @@ function ReaderDashboard() {
                                                     children: "Browse All Books"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 229,
+                                                    lineNumber: 238,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 228,
+                                                lineNumber: 237,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -977,24 +987,24 @@ function ReaderDashboard() {
                                                     children: "Go to My Library"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 232,
+                                                    lineNumber: 241,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 231,
+                                                lineNumber: 240,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 227,
+                                        lineNumber: 236,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                lineNumber: 220,
+                                lineNumber: 229,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1007,19 +1017,19 @@ function ReaderDashboard() {
                                                     className: "mr-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 239,
+                                                    lineNumber: 248,
                                                     columnNumber: 17
                                                 }, this),
                                                 "AI Recommendations"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                            lineNumber: 238,
+                                            lineNumber: 247,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 237,
+                                        lineNumber: 246,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1029,7 +1039,7 @@ function ReaderDashboard() {
                                                 children: "Get personalized book suggestions based on your taste."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 244,
+                                                lineNumber: 253,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1040,46 +1050,50 @@ function ReaderDashboard() {
                                                     children: "Find My Next Read"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                    lineNumber: 248,
+                                                    lineNumber: 257,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                                lineNumber: 247,
+                                                lineNumber: 256,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                        lineNumber: 243,
+                                        lineNumber: 252,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                                lineNumber: 236,
+                                lineNumber: 245,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                        lineNumber: 219,
+                        lineNumber: 228,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/reader/dashboard/page.tsx",
-                lineNumber: 100,
+                lineNumber: 109,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/reader/dashboard/page.tsx",
-        lineNumber: 92,
+        lineNumber: 101,
         columnNumber: 5
     }, this);
 }
-_s(ReaderDashboard, "OqYspcEJaeJ08rHVLGUnu6xEBq0=");
+_s(ReaderDashboard, "TEnWgwfXqaj1Wg35SCVusOFAJ9w=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"]
+    ];
+});
 _c = ReaderDashboard;
 var _c;
 __turbopack_context__.k.register(_c, "ReaderDashboard");

@@ -23,6 +23,10 @@ export default function LoginPage() {
   const { toast } = useToast();
   const userType = searchParams.get("role") || "reader";
 
+  const handleTabChange = (value: string) => {
+    router.push(`/login?role=${value}`, { scroll: false });
+  };
+
   const handleLogin = (event: React.FormEvent<HTMLFormElement>, role: UserRole) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -30,6 +34,7 @@ export default function LoginPage() {
     const lastName = formData.get("last-name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const redirectUrl = searchParams.get('redirect');
 
     if (!firstName || !lastName || !email || !password) {
       toast({
@@ -52,11 +57,19 @@ export default function LoginPage() {
 
     if (user) {
       localStorage.setItem('loggedInUser', JSON.stringify(user));
+      // Manually dispatch storage event to update header immediately
+      window.dispatchEvent(new Event('storage'));
       toast({
         title: "Login Successful",
-        description: `Welcome back, ${firstName}! Redirecting to your dashboard.`,
+        description: `Welcome back, ${firstName}! Redirecting...`,
       });
-      router.push(role === "author" ? `/author/dashboard` : `/reader/dashboard`);
+
+      if (redirectUrl) {
+          router.push(redirectUrl);
+      } else {
+         router.push(role === "author" ? `/author/dashboard` : `/reader/dashboard`);
+      }
+
     } else {
       toast({
         variant: "destructive",
@@ -68,7 +81,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-secondary/50">
-      <Tabs defaultValue={userType} className="w-full max-w-sm">
+      <Tabs value={userType} onValueChange={handleTabChange} className="w-full max-w-sm">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="reader">Reader</TabsTrigger>
           <TabsTrigger value="author">Author</TabsTrigger>

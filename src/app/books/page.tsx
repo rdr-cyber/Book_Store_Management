@@ -14,10 +14,12 @@ import {
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Book } from "@/lib/types";
+import { useSearchParams } from 'next/navigation';
 
 const BOOKS_PER_PAGE = 8;
 
 export default function BooksPage() {
+  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,7 +28,11 @@ export default function BooksPage() {
 
   useEffect(() => {
     setHasMounted(true);
-  }, []);
+    const query = searchParams.get('q');
+    if (query) {
+        setSearchTerm(query);
+    }
+  }, [searchParams]);
   
   useEffect(() => {
     if (hasMounted) {
@@ -37,9 +43,11 @@ export default function BooksPage() {
   }, [hasMounted]);
 
   const filteredBooks = useMemo(() => {
+    const lowercasedTerm = searchTerm.toLowerCase();
     return books
       .filter((book) =>
-        book.title.toLowerCase().includes(searchTerm.toLowerCase())
+        book.title.toLowerCase().includes(lowercasedTerm) ||
+        book.author.toLowerCase().includes(lowercasedTerm)
       )
       .filter(
         (book) =>
@@ -79,7 +87,7 @@ export default function BooksPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search by title..."
+            placeholder="Search by title or author..."
             className="w-full rounded-lg bg-background pl-10"
             value={searchTerm}
             onChange={(e) => {
