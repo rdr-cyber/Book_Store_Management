@@ -35,7 +35,7 @@ export default function ReaderDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    setHasMounted(true);
+    
     try {
         const loggedInUserString = localStorage.getItem('loggedInUser');
         if (loggedInUserString) {
@@ -78,7 +78,8 @@ export default function ReaderDashboard() {
             }).filter((g): g is HydratedGift => g !== null)
               .sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setReceivedGifts(hydratedGifts);
-
+            
+            setHasMounted(true);
 
         } else {
             router.push('/login?role=reader');
