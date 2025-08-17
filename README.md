@@ -55,4 +55,3 @@ Here's a detailed breakdown of the core features:
 1.  **User Authentication:** Secure login and registration processes for both readers and authors.
 2.  **Role-Based Access:** The platform provides different interfaces and functionalities based on whether a user is a reader or an author.
 3.  **Admin Panel:** An administrative panel for managing users, books, and platform settings (details of admin features are outlined in the blueprint).
-
