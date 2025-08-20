@@ -1,8 +1,8 @@
 {
   "/author/dashboard/page": "app/author/dashboard/page.js",
-  "/books/page": "app/books/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js",
-  "/reader/dashboard/page": "app/reader/dashboard/page.js"
+  "/reader/dashboard/page": "app/reader/dashboard/page.js",
+  "/register/page": "app/register/page.js"
 }

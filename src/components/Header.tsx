@@ -89,8 +89,10 @@ export default function Header() {
     updateCartCount();
 
     const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'loggedInUser' || event.key === 'cart') {
+        if (event.key === 'loggedInUser' || event.key === null) { // `null` can happen on logout from other tabs
             updateUserState();
+        }
+        if (event.key === 'cart' || event.key === null) {
             updateCartCount();
         }
     }
@@ -113,7 +115,8 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem('loggedInUser');
-    setUser(null);
+    // Dispatch a storage event to ensure all tabs are updated
+    window.dispatchEvent(new StorageEvent('storage', { key: 'loggedInUser', newValue: null }));
     router.push('/');
   };
 
@@ -140,7 +143,7 @@ export default function Header() {
   }
   
   const role = user?.role;
-  const navLinks = role ? navLinksConfig[role] : navLinksConfig.guest;
+  const navLinks = !role ? navLinksConfig.guest : navLinksConfig[role];
   const homePath = role === 'author' ? '/author/dashboard' : role === 'reader' ? '/reader/dashboard' : '/';
 
   return (
