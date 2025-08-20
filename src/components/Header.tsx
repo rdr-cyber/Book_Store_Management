@@ -19,7 +19,14 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,8 +68,7 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    setHasMounted(true);
-
+    
     const updateUserState = () => {
         try {
           const loggedInUser = localStorage.getItem('loggedInUser');
@@ -80,16 +86,19 @@ export default function Header() {
         try {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             setCartCount(cart.length);
-        } catch (error) {
+        } catch (error)
+        {
             setCartCount(0);
         }
     };
     
     updateUserState();
     updateCartCount();
+    setHasMounted(true);
+
 
     const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'loggedInUser' || event.key === null) { // `null` can happen on logout from other tabs
+        if (event.key === 'loggedInUser' || event.key === null) { 
             updateUserState();
         }
         if (event.key === 'cart' || event.key === null) {
@@ -99,7 +108,6 @@ export default function Header() {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Custom event listener for cart updates from other components
     const handleCartUpdate = () => {
         updateCartCount();
     }
@@ -115,7 +123,6 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem('loggedInUser');
-    // Dispatch a storage event to ensure all tabs are updated
     window.dispatchEvent(new StorageEvent('storage', { key: 'loggedInUser', newValue: null }));
     router.push('/');
   };
@@ -124,28 +131,13 @@ export default function Header() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const searchQuery = formData.get('search') as string;
-    if (searchQuery) {
-        router.push(`/books?q=${encodeURIComponent(searchQuery)}`);
-    } else {
-        router.push('/books');
-    }
+    router.push(`/books?q=${encodeURIComponent(searchQuery || '')}`);
   };
   
-  if (!hasMounted) {
-    // Render a placeholder or null on the server and initial client render
-    return (
-       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
-            {/* This empty div matches the server render to prevent hydration mismatch */}
-        </div>
-      </header>
-    );
-  }
-  
   const role = user?.role;
-  const navLinks = !role ? navLinksConfig.guest : navLinksConfig[role];
-  const homePath = role === 'author' ? '/author/dashboard' : role === 'reader' ? '/reader/dashboard' : '/';
-
+  const navLinks = hasMounted && role ? navLinksConfig[role] : navLinksConfig.guest;
+  const homePath = hasMounted && role ? (role === 'author' ? '/author/dashboard' : '/reader/dashboard') : '/';
+  
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
@@ -157,15 +149,15 @@ export default function Header() {
             </span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            {navLinks.map((link) => (
+              {navLinks.map((link) => (
               <Link
-                key={link.href}
-                href={link.href}
-                className="transition-colors hover:text-primary"
+                  key={link.href}
+                  href={link.href}
+                  className="transition-colors hover:text-primary"
               >
-                {link.label}
+                  {link.label}
               </Link>
-            ))}
+              ))}
           </nav>
         </div>
 
@@ -180,26 +172,33 @@ export default function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left">
-                <Link href={homePath} className="mr-6 flex items-center space-x-2">
-                  <BookOpenCheck className="h-6 w-6 text-primary" />
-                  <span className="font-bold font-headline">ShelfWise</span>
-                </Link>
-                <nav className="mt-6 flex flex-col space-y-4">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="transition-colors hover:text-primary"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </nav>
+                <SheetHeader>
+                   <Link href={homePath} className="flex items-center space-x-2">
+                      <BookOpenCheck className="h-6 w-6 text-primary" />
+                      <SheetTitle className="font-headline">ShelfWise</SheetTitle>
+                   </Link>
+                   <SheetDescription>
+                       Navigate the ShelfWise platform.
+                   </SheetDescription>
+                </SheetHeader>
+                {hasMounted && (
+                    <nav className="mt-6 flex flex-col space-y-4">
+                    {navLinks.map((link) => (
+                        <Link
+                        key={link.href}
+                        href={link.href}
+                        className="transition-colors hover:text-primary"
+                        >
+                        {link.label}
+                        </Link>
+                    ))}
+                    </nav>
+                )}
               </SheetContent>
             </Sheet>
           </div>
           
-          {role === 'reader' && (
+          {hasMounted && role === 'reader' && (
              <form onSubmit={handleSearch} className="relative flex-1 md:grow-0">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -213,7 +212,7 @@ export default function Header() {
 
 
           <nav className="flex items-center">
-            {role === 'reader' && (
+            {hasMounted && role === 'reader' && (
                 <Button variant="ghost" size="icon" asChild>
                     <Link href="/cart" className="relative">
                         <ShoppingCart className="h-5 w-5" />
@@ -227,73 +226,75 @@ export default function Header() {
                 </Button>
             )}
             
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-                  <span className="sr-only">User Menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {user ? (
-                  <>
-                    <DropdownMenuLabel>Welcome, {user.firstName}!</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {user.role === 'reader' ? (
-                       <>
-                        <DropdownMenuItem asChild>
-                          <Link href="/reader/dashboard">
-                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                            <span>Dashboard</span>
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/reader/library">
-                            <Library className="mr-2 h-4 w-4" />
-                            <span>My Library</span>
-                          </Link>
-                        </DropdownMenuItem>
-                       </>
-                    ) : ( // Author links
-                      <DropdownMenuItem asChild>
-                        <Link href="/author/dashboard">
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
-                          <span>Dashboard</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                     <DropdownMenuItem asChild>
-                      <Link href="/settings">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                     <DropdownMenuItem onClick={handleLogout}>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Logout</span>
-                    </DropdownMenuItem>
-                  </>
-                ) : ( // Guest links
-                  <>
-                    <DropdownMenuLabel>Welcome</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/login">
-                          <LogIn className="mr-2 h-4 w-4" />
-                          <span>Login</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/register">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Register</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {hasMounted && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                        <User className="h-5 w-5" />
+                        <span className="sr-only">User Menu</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {user ? (
+                        <>
+                            <DropdownMenuLabel>Welcome, {user.firstName}!</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {user.role === 'reader' ? (
+                            <>
+                                <DropdownMenuItem asChild>
+                                <Link href="/reader/dashboard">
+                                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                                    <span>Dashboard</span>
+                                </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                <Link href="/reader/library">
+                                    <Library className="mr-2 h-4 w-4" />
+                                    <span>My Library</span>
+                                </Link>
+                                </DropdownMenuItem>
+                            </>
+                            ) : ( // Author links
+                            <DropdownMenuItem asChild>
+                                <Link href="/author/dashboard">
+                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                <span>Dashboard</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem asChild>
+                            <Link href="/settings">
+                                <Settings className="mr-2 h-4 w-4" />
+                                <span>Settings</span>
+                            </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout}>
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>Logout</span>
+                            </DropdownMenuItem>
+                        </>
+                        ) : ( // Guest links
+                        <>
+                            <DropdownMenuLabel>Welcome</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                            <Link href="/login">
+                                <LogIn className="mr-2 h-4 w-4" />
+                                <span>Login</span>
+                            </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                            <Link href="/register">
+                                <User className="mr-2 h-4 w-4" />
+                                <span>Register</span>
+                            </Link>
+                            </DropdownMenuItem>
+                        </>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )}
           </nav>
         </div>
       </div>
