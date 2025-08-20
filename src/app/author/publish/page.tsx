@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, FormEvent, useRef } from "react";
+import { useState, FormEvent, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,11 +41,28 @@ export default function PublishBookPage() {
     const [description, setDescription] = useState('');
     const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
     const [bookFile, setBookFile] = useState<File | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const coverImageRef = useRef<HTMLInputElement>(null);
     const bookFileRef = useRef<HTMLInputElement>(null);
 
     const categories = bookCategories.filter(c => c !== "All");
+
+    useEffect(() => {
+        const userString = localStorage.getItem('loggedInUser');
+        if (!userString) {
+            toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to publish a book.' });
+            router.push('/login?role=author');
+            return;
+        }
+        const loggedInUser: User = JSON.parse(userString);
+        if (loggedInUser.role !== 'author') {
+             toast({ variant: 'destructive', title: 'Access Denied', description: 'Only authors can publish books.' });
+             router.push('/');
+             return;
+        }
+        setUser(loggedInUser);
+    }, [router, toast]);
 
     const fileToDataUrl = (file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
@@ -59,19 +76,15 @@ export default function PublishBookPage() {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const userString = localStorage.getItem('loggedInUser');
-        if (!userString) {
-            toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to publish a book.' });
-            router.push('/login?role=author');
-            return;
+        if (!user) {
+             toast({ variant: 'destructive', title: 'Error', description: 'User session not found.' });
+             return;
         }
 
         if (!title || !price || !stock || !reorderPoint || !category || !coverType || !description) {
             toast({ variant: 'destructive', title: 'Error', description: 'Please fill out all fields.' });
             return;
         }
-
-        const user: User = JSON.parse(userString);
         
         let coverImageUrl = 'https://placehold.co/400x600.png';
         if (coverImageFile) {

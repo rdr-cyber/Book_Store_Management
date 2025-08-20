@@ -34,13 +34,13 @@ export default function GiftPage() {
   const [book, setBook] = useState<Book | null>(null);
   const [hasMounted, setHasMounted] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState("");
-  const [recipientFirstName, setRecipientFirstName] = useState("");
-  const [recipientLastName, setRecipientLastName] = useState("");
-  const [isRecipientFound, setIsRecipientFound] = useState(false);
+  const [recipient, setRecipient] = useState<User | null>(null);
   const [giver, setGiver] = useState<User | null>(null);
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvc, setCvc] = useState('');
+  const [recipientStatusMessage, setRecipientStatusMessage] = useState<string | null>(null);
+  const [isGiftable, setIsGiftable] = useState(false);
 
 
   useEffect(() => {
@@ -67,75 +67,55 @@ export default function GiftPage() {
   }, [bookId, router, toast]);
   
   const handleEmailBlur = (e: FocusEvent<HTMLInputElement>) => {
-      const email = e.target.value;
-      if (!email) {
-        setRecipientFirstName("");
-        setRecipientLastName("");
-        setIsRecipientFound(false);
-        return;
+      const email = e.target.value.trim().toLowerCase();
+      setRecipientEmail(email);
+      setRecipientStatusMessage(null);
+      setIsGiftable(false);
+      setRecipient(null);
+
+      if (!email) return;
+
+      if (email === giver?.email) {
+          setRecipientStatusMessage("You cannot gift a book to yourself.");
+          return;
       }
       
       const allUsers: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-      const recipient = allUsers.find(u => u.email === email && u.role === 'reader');
+      const foundRecipient = allUsers.find(u => u.email.toLowerCase() === email && u.role === 'reader');
       
-      if (recipient) {
-          // Check if recipient already owns the book
+      if (foundRecipient) {
           const userLibrary = JSON.parse(localStorage.getItem('userLibrary') || '{}');
-          const recipientLibrary: string[] = userLibrary[recipient.id] || [];
+          const recipientLibrary: string[] = userLibrary[foundRecipient.id] || [];
 
           if (recipientLibrary.includes(bookId)) {
-              toast({ variant: 'destructive', title: 'Gift Not Sent', description: 'This reader already owns the book.'});
-              setIsRecipientFound(false);
-              return;
-          }
+              setRecipientStatusMessage('This reader already owns the book.');
+          } else {
+              const existingGifts: GiftType[] = JSON.parse(localStorage.getItem('gifts') || '[]');
+              const hasBeenGifted = existingGifts.some(g => g.bookId === bookId && g.recipientUserId === foundRecipient.id && g.giverUserId === giver?.id);
 
-          setRecipientFirstName(recipient.firstName);
-          setRecipientLastName(recipient.lastName);
-          setIsRecipientFound(true);
+              if(hasBeenGifted) {
+                setRecipientStatusMessage('You have already gifted this book to this user.');
+              } else {
+                setRecipient(foundRecipient);
+                setRecipientStatusMessage('Recipient found!');
+                setIsGiftable(true);
+              }
+          }
       } else {
-          setRecipientFirstName("");
-          setRecipientLastName("");
-          setIsRecipientFound(false);
-          toast({ variant: 'destructive', title: 'Recipient Not Found', description: 'No reader account found with that email address.'});
+          setRecipientStatusMessage('No reader account found with that email address.');
       }
   }
 
 
   const handleGiftSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!giver || !book || !recipientEmail) {
-        toast({ variant: "destructive", title: "Missing Information", description: "Please provide a valid recipient email." });
-        return;
-    }
-    
-    if (!isRecipientFound) {
-         toast({ variant: "destructive", title: "Invalid Recipient", description: "Cannot send gift. Please check the recipient's email." });
+    if (!giver || !book || !recipient || !isGiftable) {
+        toast({ variant: "destructive", title: "Cannot Send Gift", description: recipientStatusMessage || "Please resolve the issues with the recipient's details." });
         return;
     }
 
     if (!cardNumber || !expiry || !cvc) {
         toast({ variant: "destructive", title: "Payment Incomplete", description: "Please fill out all payment details." });
-        return;
-    }
-    
-    // Find the recipient user
-    const allUsers: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-    const recipient = allUsers.find(u => u.email === recipientEmail && u.role === 'reader');
-
-    if (!recipient) {
-        toast({ variant: "destructive", title: "Recipient Not Found", description: "No reader account found with that email address." });
-        return;
-    }
-    
-    if (recipient.id === giver.id) {
-         toast({ variant: "destructive", title: "Cannot Gift to Self", description: "You cannot gift a book to yourself." });
-        return;
-    }
-    
-    const userLibrary = JSON.parse(localStorage.getItem('userLibrary') || '{}');
-    const recipientLibrary: string[] = userLibrary[recipient.id] || [];
-    if (recipientLibrary.includes(bookId)) {
-        toast({ variant: 'destructive', title: 'Gift Not Sent', description: 'This reader already owns the book.'});
         return;
     }
 
@@ -145,7 +125,7 @@ export default function GiftPage() {
             id: `gift-${Date.now()}`,
             bookId: book.id,
             giverUserId: giver.id,
-            recipientEmail: recipientEmail,
+            recipientEmail: recipient.email,
             recipientUserId: recipient.id,
             amount: book.price,
             status: "claimed", // Auto-claimed in this simulation
@@ -153,14 +133,17 @@ export default function GiftPage() {
         };
 
         const existingGifts: GiftType[] = JSON.parse(localStorage.getItem('gifts') || '[]');
-        localStorage.setItem('gifts', JSON.stringify([...existingGifts, newGift]));
+        existingGifts.push(newGift);
+        localStorage.setItem('gifts', JSON.stringify(existingGifts));
 
         // Add book to recipient's library
+        const userLibrary = JSON.parse(localStorage.getItem('userLibrary') || '{}');
+        const recipientLibrary: string[] = userLibrary[recipient.id] || [];
         recipientLibrary.push(book.id);
         userLibrary[recipient.id] = recipientLibrary;
         localStorage.setItem('userLibrary', JSON.stringify(userLibrary));
         
-        toast({ title: "Gift Sent!", description: `${book.title} has been successfully sent to ${recipientEmail}.` });
+        toast({ title: "Gift Sent!", description: `${book.title} has been successfully sent to ${recipient.email}.` });
         router.push("/books");
 
     } catch (error) {
@@ -223,18 +206,22 @@ export default function GiftPage() {
                                             id="recipient-email" 
                                             type="email"
                                             placeholder="friend@example.com" 
-                                            value={recipientEmail} 
-                                            onChange={e => setRecipientEmail(e.target.value)} 
+                                            defaultValue={recipientEmail}
                                             onBlur={handleEmailBlur}
                                             required 
                                         />
+                                         {recipientStatusMessage && (
+                                            <p className={`text-sm ${isGiftable ? 'text-green-600' : 'text-destructive'}`}>
+                                                {recipientStatusMessage}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="recipient-first-name">First Name</Label>
                                             <Input 
                                                 id="recipient-first-name"
-                                                value={recipientFirstName}
+                                                value={recipient?.firstName || ''}
                                                 readOnly
                                                 disabled
                                                 placeholder="Recipient's first name"
@@ -244,7 +231,7 @@ export default function GiftPage() {
                                             <Label htmlFor="recipient-last-name">Last Name</Label>
                                             <Input 
                                                 id="recipient-last-name"
-                                                value={recipientLastName}
+                                                value={recipient?.lastName || ''}
                                                 readOnly
                                                 disabled
                                                 placeholder="Recipient's last name"
@@ -284,7 +271,7 @@ export default function GiftPage() {
                              </AccordionItem>
                         </Accordion>
                         
-                        <Button type="submit" size="lg" className="w-full">
+                        <Button type="submit" size="lg" className="w-full" disabled={!isGiftable}>
                             <Gift className="mr-2" />
                             Pay and Send Gift
                         </Button>

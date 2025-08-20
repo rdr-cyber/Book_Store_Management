@@ -25,8 +25,19 @@ export default function BookCard({ book, hasAccess = false }: { book: Book, hasA
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItem = cart.find((item: any) => item.id === book.id);
     
+    // Check for purchase duplication (already own)
+     if (hasAccess) {
+        toast({
+          variant: 'destructive',
+          title: "Already Owned",
+          description: "You already have this book in your library.",
+        });
+        return;
+    }
+    
+    // Check for cart duplication
+    const existingItem = cart.find((item: any) => item.id === book.id);
     if (existingItem) {
         toast({
           variant: 'destructive',
@@ -35,7 +46,6 @@ export default function BookCard({ book, hasAccess = false }: { book: Book, hasA
         });
         return;
     } else {
-        // For the cart, we only need the ID and quantity to avoid storage issues.
         cart.push({ id: book.id, quantity: 1 });
     }
     
@@ -45,6 +55,7 @@ export default function BookCard({ book, hasAccess = false }: { book: Book, hasA
           title: "Added to Cart!",
           description: `${book.title} has been added to your shopping cart.`,
         });
+        window.dispatchEvent(new Event('cartUpdated'));
     } catch (error) {
         toast({
             variant: 'destructive',
@@ -56,12 +67,19 @@ export default function BookCard({ book, hasAccess = false }: { book: Book, hasA
 
   const handleBuyNow = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // Instead of storing the whole book object, just store the ID and quantity.
+
+    if (hasAccess) {
+        toast({
+          variant: 'destructive',
+          title: "Already Owned",
+          description: "You already have this book in your library.",
+        });
+        return;
+    }
+
     const buyNowItem = { id: book.id, quantity: 1 };
     
     try {
-        // Clear any previous buy now item first
-        localStorage.removeItem('buyNowItem');
         localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
         router.push('/checkout');
     } catch (error) {
@@ -124,12 +142,10 @@ export default function BookCard({ book, hasAccess = false }: { book: Book, hasA
             </div>
           )}
         </div>
-        {!hasAccess && (
-            <Button variant="secondary" className="w-full" onClick={handleGift} disabled={book.stock === 0}>
-                <Gift className="mr-2"/>
-                Gift this Book
-            </Button>
-        )}
+        <Button variant="secondary" className="w-full" onClick={handleGift} disabled={book.stock === 0}>
+            <Gift className="mr-2"/>
+            Gift this Book
+        </Button>
       </CardFooter>
     </Card>
   );

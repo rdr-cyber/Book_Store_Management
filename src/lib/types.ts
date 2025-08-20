@@ -1,4 +1,5 @@
 
+
 export type Book = {
   id: string;
   title: string;
@@ -64,7 +65,7 @@ export type Gift = {
   bookId: string;
   giverUserId: string;
   recipientEmail: string;
-  recipientUserId?: string; // Filled in when the recipient claims the gift
+  recipientUserId: string; 
   amount: number;
   status: "sent" | "claimed";
   createdAt: Date;

@@ -235,13 +235,13 @@ function GiftPage() {
     const [book, setBook] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [hasMounted, setHasMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [recipientEmail, setRecipientEmail] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
-    const [recipientFirstName, setRecipientFirstName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
-    const [recipientLastName, setRecipientLastName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
-    const [isRecipientFound, setIsRecipientFound] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [recipient, setRecipient] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [giver, setGiver] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [cardNumber, setCardNumber] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
     const [expiry, setExpiry] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
     const [cvc, setCvc] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    const [recipientStatusMessage, setRecipientStatusMessage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [isGiftable, setIsGiftable] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         setHasMounted(true);
         const allPublishedBooks = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
@@ -274,57 +274,45 @@ function GiftPage() {
         toast
     ]);
     const handleEmailBlur = (e)=>{
-        const email = e.target.value;
-        if (!email) {
-            setRecipientFirstName("");
-            setRecipientLastName("");
-            setIsRecipientFound(false);
+        const email = e.target.value.trim().toLowerCase();
+        setRecipientEmail(email);
+        setRecipientStatusMessage(null);
+        setIsGiftable(false);
+        setRecipient(null);
+        if (!email) return;
+        if (email === giver?.email) {
+            setRecipientStatusMessage("You cannot gift a book to yourself.");
             return;
         }
         const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
-        const recipient = allUsers.find((u)=>u.email === email && u.role === 'reader');
-        if (recipient) {
-            // Check if recipient already owns the book
+        const foundRecipient = allUsers.find((u)=>u.email.toLowerCase() === email && u.role === 'reader');
+        if (foundRecipient) {
             const userLibrary = JSON.parse(localStorage.getItem('userLibrary') || '{}');
-            const recipientLibrary = userLibrary[recipient.id] || [];
+            const recipientLibrary = userLibrary[foundRecipient.id] || [];
             if (recipientLibrary.includes(bookId)) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Gift Not Sent',
-                    description: 'This reader already owns the book.'
-                });
-                setIsRecipientFound(false);
-                return;
+                setRecipientStatusMessage('This reader already owns the book.');
+            } else {
+                const existingGifts = JSON.parse(localStorage.getItem('gifts') || '[]');
+                const hasBeenGifted = existingGifts.some((g)=>g.bookId === bookId && g.recipientUserId === foundRecipient.id && g.giverUserId === giver?.id);
+                if (hasBeenGifted) {
+                    setRecipientStatusMessage('You have already gifted this book to this user.');
+                } else {
+                    setRecipient(foundRecipient);
+                    setRecipientStatusMessage('Recipient found!');
+                    setIsGiftable(true);
+                }
             }
-            setRecipientFirstName(recipient.firstName);
-            setRecipientLastName(recipient.lastName);
-            setIsRecipientFound(true);
         } else {
-            setRecipientFirstName("");
-            setRecipientLastName("");
-            setIsRecipientFound(false);
-            toast({
-                variant: 'destructive',
-                title: 'Recipient Not Found',
-                description: 'No reader account found with that email address.'
-            });
+            setRecipientStatusMessage('No reader account found with that email address.');
         }
     };
     const handleGiftSubmit = (e)=>{
         e.preventDefault();
-        if (!giver || !book || !recipientEmail) {
+        if (!giver || !book || !recipient || !isGiftable) {
             toast({
                 variant: "destructive",
-                title: "Missing Information",
-                description: "Please provide a valid recipient email."
-            });
-            return;
-        }
-        if (!isRecipientFound) {
-            toast({
-                variant: "destructive",
-                title: "Invalid Recipient",
-                description: "Cannot send gift. Please check the recipient's email."
+                title: "Cannot Send Gift",
+                description: recipientStatusMessage || "Please resolve the issues with the recipient's details."
             });
             return;
         }
@@ -336,59 +324,30 @@ function GiftPage() {
             });
             return;
         }
-        // Find the recipient user
-        const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
-        const recipient = allUsers.find((u)=>u.email === recipientEmail && u.role === 'reader');
-        if (!recipient) {
-            toast({
-                variant: "destructive",
-                title: "Recipient Not Found",
-                description: "No reader account found with that email address."
-            });
-            return;
-        }
-        if (recipient.id === giver.id) {
-            toast({
-                variant: "destructive",
-                title: "Cannot Gift to Self",
-                description: "You cannot gift a book to yourself."
-            });
-            return;
-        }
-        const userLibrary = JSON.parse(localStorage.getItem('userLibrary') || '{}');
-        const recipientLibrary = userLibrary[recipient.id] || [];
-        if (recipientLibrary.includes(bookId)) {
-            toast({
-                variant: 'destructive',
-                title: 'Gift Not Sent',
-                description: 'This reader already owns the book.'
-            });
-            return;
-        }
         try {
             // Create gift record
             const newGift = {
                 id: `gift-${Date.now()}`,
                 bookId: book.id,
                 giverUserId: giver.id,
-                recipientEmail: recipientEmail,
+                recipientEmail: recipient.email,
                 recipientUserId: recipient.id,
                 amount: book.price,
                 status: "claimed",
                 createdAt: new Date()
             };
             const existingGifts = JSON.parse(localStorage.getItem('gifts') || '[]');
-            localStorage.setItem('gifts', JSON.stringify([
-                ...existingGifts,
-                newGift
-            ]));
+            existingGifts.push(newGift);
+            localStorage.setItem('gifts', JSON.stringify(existingGifts));
             // Add book to recipient's library
+            const userLibrary = JSON.parse(localStorage.getItem('userLibrary') || '{}');
+            const recipientLibrary = userLibrary[recipient.id] || [];
             recipientLibrary.push(book.id);
             userLibrary[recipient.id] = recipientLibrary;
             localStorage.setItem('userLibrary', JSON.stringify(userLibrary));
             toast({
                 title: "Gift Sent!",
-                description: `${book.title} has been successfully sent to ${recipientEmail}.`
+                description: `${book.title} has been successfully sent to ${recipient.email}.`
             });
             router.push("/books");
         } catch (error) {
@@ -407,12 +366,12 @@ function GiftPage() {
                 children: "Loading..."
             }, void 0, false, {
                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                lineNumber: 175,
+                lineNumber: 158,
                 columnNumber: 13
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/gift/[id]/page.tsx",
-            lineNumber: 174,
+            lineNumber: 157,
             columnNumber: 9
         }, this);
     }
@@ -431,24 +390,24 @@ function GiftPage() {
                                 className: "mr-2"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                lineNumber: 185,
+                                lineNumber: 168,
                                 columnNumber: 21
                             }, this),
                             "Back to Book"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                        lineNumber: 184,
+                        lineNumber: 167,
                         columnNumber: 17
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/gift/[id]/page.tsx",
-                    lineNumber: 183,
+                    lineNumber: 166,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                lineNumber: 182,
+                lineNumber: 165,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -466,7 +425,7 @@ function GiftPage() {
                                 "data-ai-hint": "book cover"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                lineNumber: 192,
+                                lineNumber: 175,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -474,7 +433,7 @@ function GiftPage() {
                                 children: book.title
                             }, void 0, false, {
                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                lineNumber: 200,
+                                lineNumber: 183,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -485,7 +444,7 @@ function GiftPage() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                lineNumber: 201,
+                                lineNumber: 184,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -496,13 +455,13 @@ function GiftPage() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                lineNumber: 202,
+                                lineNumber: 185,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                        lineNumber: 191,
+                        lineNumber: 174,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -515,20 +474,20 @@ function GiftPage() {
                                             children: "Gift This Book"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                            lineNumber: 207,
+                                            lineNumber: 190,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                             children: "Send this book to another ShelfWise reader."
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                            lineNumber: 208,
+                                            lineNumber: 191,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                    lineNumber: 206,
+                                    lineNumber: 189,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -550,7 +509,7 @@ function GiftPage() {
                                                                 children: "1. Recipient Details"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                lineNumber: 216,
+                                                                lineNumber: 199,
                                                                 columnNumber: 33
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -564,26 +523,33 @@ function GiftPage() {
                                                                                 children: "Recipient's Email"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 221,
+                                                                                lineNumber: 204,
                                                                                 columnNumber: 41
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
                                                                                 id: "recipient-email",
                                                                                 type: "email",
                                                                                 placeholder: "friend@example.com",
-                                                                                value: recipientEmail,
-                                                                                onChange: (e)=>setRecipientEmail(e.target.value),
+                                                                                defaultValue: recipientEmail,
                                                                                 onBlur: handleEmailBlur,
                                                                                 required: true
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 222,
+                                                                                lineNumber: 205,
                                                                                 columnNumber: 41
+                                                                            }, this),
+                                                                            recipientStatusMessage && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                                className: `text-sm ${isGiftable ? 'text-green-600' : 'text-destructive'}`,
+                                                                                children: recipientStatusMessage
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/src/app/gift/[id]/page.tsx",
+                                                                                lineNumber: 214,
+                                                                                columnNumber: 45
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                        lineNumber: 220,
+                                                                        lineNumber: 203,
                                                                         columnNumber: 37
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -597,24 +563,24 @@ function GiftPage() {
                                                                                         children: "First Name"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                        lineNumber: 234,
+                                                                                        lineNumber: 221,
                                                                                         columnNumber: 45
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
                                                                                         id: "recipient-first-name",
-                                                                                        value: recipientFirstName,
+                                                                                        value: recipient?.firstName || '',
                                                                                         readOnly: true,
                                                                                         disabled: true,
                                                                                         placeholder: "Recipient's first name"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                        lineNumber: 235,
+                                                                                        lineNumber: 222,
                                                                                         columnNumber: 45
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 233,
+                                                                                lineNumber: 220,
                                                                                 columnNumber: 41
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -625,30 +591,30 @@ function GiftPage() {
                                                                                         children: "Last Name"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                        lineNumber: 244,
+                                                                                        lineNumber: 231,
                                                                                         columnNumber: 45
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
                                                                                         id: "recipient-last-name",
-                                                                                        value: recipientLastName,
+                                                                                        value: recipient?.lastName || '',
                                                                                         readOnly: true,
                                                                                         disabled: true,
                                                                                         placeholder: "Recipient's last name"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                        lineNumber: 245,
+                                                                                        lineNumber: 232,
                                                                                         columnNumber: 45
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 243,
+                                                                                lineNumber: 230,
                                                                                 columnNumber: 41
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                        lineNumber: 232,
+                                                                        lineNumber: 219,
                                                                         columnNumber: 37
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -656,19 +622,19 @@ function GiftPage() {
                                                                         children: "The book will be added directly to the recipient's ShelfWise library."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                        lineNumber: 254,
+                                                                        lineNumber: 241,
                                                                         columnNumber: 37
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                lineNumber: 219,
+                                                                lineNumber: 202,
                                                                 columnNumber: 33
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                        lineNumber: 215,
+                                                        lineNumber: 198,
                                                         columnNumber: 30
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AccordionItem"], {
@@ -679,7 +645,7 @@ function GiftPage() {
                                                                 children: "2. Payment Information"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                lineNumber: 258,
+                                                                lineNumber: 245,
                                                                 columnNumber: 33
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -693,7 +659,7 @@ function GiftPage() {
                                                                                 children: "Card Number"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 263,
+                                                                                lineNumber: 250,
                                                                                 columnNumber: 41
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -704,13 +670,13 @@ function GiftPage() {
                                                                                 required: true
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 264,
+                                                                                lineNumber: 251,
                                                                                 columnNumber: 41
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                        lineNumber: 262,
+                                                                        lineNumber: 249,
                                                                         columnNumber: 38
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -724,7 +690,7 @@ function GiftPage() {
                                                                                         children: "Expiration"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                        lineNumber: 274,
+                                                                                        lineNumber: 261,
                                                                                         columnNumber: 45
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -735,13 +701,13 @@ function GiftPage() {
                                                                                         required: true
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                        lineNumber: 275,
+                                                                                        lineNumber: 262,
                                                                                         columnNumber: 45
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 273,
+                                                                                lineNumber: 260,
                                                                                 columnNumber: 41
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -752,7 +718,7 @@ function GiftPage() {
                                                                                         children: "CVC"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                        lineNumber: 278,
+                                                                                        lineNumber: 265,
                                                                                         columnNumber: 45
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
@@ -763,19 +729,19 @@ function GiftPage() {
                                                                                         required: true
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                        lineNumber: 279,
+                                                                                        lineNumber: 266,
                                                                                         columnNumber: 45
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 277,
+                                                                                lineNumber: 264,
                                                                                 columnNumber: 41
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                        lineNumber: 272,
+                                                                        lineNumber: 259,
                                                                         columnNumber: 37
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -789,85 +755,86 @@ function GiftPage() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                                lineNumber: 282,
+                                                                                lineNumber: 269,
                                                                                 columnNumber: 113
                                                                             }, this),
                                                                             "."
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                        lineNumber: 282,
+                                                                        lineNumber: 269,
                                                                         columnNumber: 37
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                                lineNumber: 261,
+                                                                lineNumber: 248,
                                                                 columnNumber: 33
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                        lineNumber: 257,
+                                                        lineNumber: 244,
                                                         columnNumber: 30
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                lineNumber: 214,
+                                                lineNumber: 197,
                                                 columnNumber: 25
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
                                                 type: "submit",
                                                 size: "lg",
                                                 className: "w-full",
+                                                disabled: !isGiftable,
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$gift$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Gift$3e$__["Gift"], {
                                                         className: "mr-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                        lineNumber: 288,
+                                                        lineNumber: 275,
                                                         columnNumber: 29
                                                     }, this),
                                                     "Pay and Send Gift"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                                lineNumber: 287,
+                                                lineNumber: 274,
                                                 columnNumber: 25
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                        lineNumber: 213,
+                                        lineNumber: 196,
                                         columnNumber: 21
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/gift/[id]/page.tsx",
-                                    lineNumber: 212,
+                                    lineNumber: 195,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/gift/[id]/page.tsx",
-                            lineNumber: 205,
+                            lineNumber: 188,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/gift/[id]/page.tsx",
-                        lineNumber: 204,
+                        lineNumber: 187,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/gift/[id]/page.tsx",
-                lineNumber: 190,
+                lineNumber: 173,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/gift/[id]/page.tsx",
-        lineNumber: 181,
+        lineNumber: 164,
         columnNumber: 5
     }, this);
 }

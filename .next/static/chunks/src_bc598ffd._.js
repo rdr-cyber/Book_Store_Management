@@ -187,6 +187,16 @@ function BookCard({ book, hasAccess = false }) {
     const handleAddToCart = (e)=>{
         e.preventDefault();
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        // Check for purchase duplication (already own)
+        if (hasAccess) {
+            toast({
+                variant: 'destructive',
+                title: "Already Owned",
+                description: "You already have this book in your library."
+            });
+            return;
+        }
+        // Check for cart duplication
         const existingItem = cart.find((item)=>item.id === book.id);
         if (existingItem) {
             toast({
@@ -196,7 +206,6 @@ function BookCard({ book, hasAccess = false }) {
             });
             return;
         } else {
-            // For the cart, we only need the ID and quantity to avoid storage issues.
             cart.push({
                 id: book.id,
                 quantity: 1
@@ -208,6 +217,7 @@ function BookCard({ book, hasAccess = false }) {
                 title: "Added to Cart!",
                 description: `${book.title} has been added to your shopping cart.`
             });
+            window.dispatchEvent(new Event('cartUpdated'));
         } catch (error) {
             toast({
                 variant: 'destructive',
@@ -218,14 +228,19 @@ function BookCard({ book, hasAccess = false }) {
     };
     const handleBuyNow = (e)=>{
         e.preventDefault();
-        // Instead of storing the whole book object, just store the ID and quantity.
+        if (hasAccess) {
+            toast({
+                variant: 'destructive',
+                title: "Already Owned",
+                description: "You already have this book in your library."
+            });
+            return;
+        }
         const buyNowItem = {
             id: book.id,
             quantity: 1
         };
         try {
-            // Clear any previous buy now item first
-            localStorage.removeItem('buyNowItem');
             localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
             router.push('/checkout');
         } catch (error) {
@@ -259,7 +274,7 @@ function BookCard({ book, hasAccess = false }) {
                                 "data-ai-hint": "book cover"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/BookCard.tsx",
-                                lineNumber: 85,
+                                lineNumber: 103,
                                 columnNumber: 11
                             }, this),
                             hasAccess && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -268,18 +283,18 @@ function BookCard({ book, hasAccess = false }) {
                                     className: "h-12 w-12 text-white"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/BookCard.tsx",
-                                    lineNumber: 95,
+                                    lineNumber: 113,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/BookCard.tsx",
-                                lineNumber: 94,
+                                lineNumber: 112,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/BookCard.tsx",
-                        lineNumber: 84,
+                        lineNumber: 102,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -291,7 +306,7 @@ function BookCard({ book, hasAccess = false }) {
                                 children: book.category
                             }, void 0, false, {
                                 fileName: "[project]/src/components/BookCard.tsx",
-                                lineNumber: 100,
+                                lineNumber: 118,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardTitle"], {
@@ -299,7 +314,7 @@ function BookCard({ book, hasAccess = false }) {
                                 children: book.title
                             }, void 0, false, {
                                 fileName: "[project]/src/components/BookCard.tsx",
-                                lineNumber: 103,
+                                lineNumber: 121,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -307,19 +322,19 @@ function BookCard({ book, hasAccess = false }) {
                                 children: book.author
                             }, void 0, false, {
                                 fileName: "[project]/src/components/BookCard.tsx",
-                                lineNumber: 106,
+                                lineNumber: 124,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/BookCard.tsx",
-                        lineNumber: 99,
+                        lineNumber: 117,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/BookCard.tsx",
-                lineNumber: 83,
+                lineNumber: 101,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardFooter"], {
@@ -333,7 +348,7 @@ function BookCard({ book, hasAccess = false }) {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/BookCard.tsx",
-                        lineNumber: 110,
+                        lineNumber: 128,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -347,12 +362,12 @@ function BookCard({ book, hasAccess = false }) {
                                 children: "Read Now"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/BookCard.tsx",
-                                lineNumber: 114,
+                                lineNumber: 132,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/BookCard.tsx",
-                            lineNumber: 113,
+                            lineNumber: 131,
                             columnNumber: 15
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "grid grid-cols-2 gap-2",
@@ -364,7 +379,7 @@ function BookCard({ book, hasAccess = false }) {
                                     children: book.stock > 0 ? "Add to Cart" : "Out of Stock"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/BookCard.tsx",
-                                    lineNumber: 118,
+                                    lineNumber: 136,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -373,21 +388,21 @@ function BookCard({ book, hasAccess = false }) {
                                     children: "Buy"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/BookCard.tsx",
-                                    lineNumber: 121,
+                                    lineNumber: 139,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/BookCard.tsx",
-                            lineNumber: 117,
+                            lineNumber: 135,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/BookCard.tsx",
-                        lineNumber: 111,
+                        lineNumber: 129,
                         columnNumber: 9
                     }, this),
-                    !hasAccess && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                         variant: "secondary",
                         className: "w-full",
                         onClick: handleGift,
@@ -397,26 +412,26 @@ function BookCard({ book, hasAccess = false }) {
                                 className: "mr-2"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/BookCard.tsx",
-                                lineNumber: 129,
-                                columnNumber: 17
+                                lineNumber: 146,
+                                columnNumber: 13
                             }, this),
                             "Gift this Book"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/BookCard.tsx",
-                        lineNumber: 128,
-                        columnNumber: 13
+                        lineNumber: 145,
+                        columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/BookCard.tsx",
-                lineNumber: 109,
+                lineNumber: 127,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/BookCard.tsx",
-        lineNumber: 82,
+        lineNumber: 100,
         columnNumber: 5
     }, this);
 }
@@ -682,6 +697,8 @@ function BooksPage() {
     const [selectedCategory, setSelectedCategory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("All");
     const [currentPage, setCurrentPage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(1);
     const [books, setBooks] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [userLibrary, setUserLibrary] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [hasMounted, setHasMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "BooksPage.useEffect": ()=>{
@@ -690,20 +707,19 @@ function BooksPage() {
             if (query) {
                 setSearchTerm(query);
             }
-        }
-    }["BooksPage.useEffect"], [
-        searchParams
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "BooksPage.useEffect": ()=>{
-            if (hasMounted) {
-                // Load books published by authors from localStorage.
-                const publishedBooks = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
-                setBooks(publishedBooks);
+            // Load books published by authors from localStorage.
+            const publishedBooks = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
+            setBooks(publishedBooks);
+            const loggedInUserString = localStorage.getItem('loggedInUser');
+            if (loggedInUserString) {
+                const loggedInUser = JSON.parse(loggedInUserString);
+                setUser(loggedInUser);
+                const allLibraryData = JSON.parse(localStorage.getItem('userLibrary') || '{}');
+                setUserLibrary(allLibraryData[loggedInUser.id] || []);
             }
         }
     }["BooksPage.useEffect"], [
-        hasMounted
+        searchParams
     ]);
     const filteredBooks = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
         "BooksPage.useMemo[filteredBooks]": ()=>{
@@ -751,7 +767,7 @@ function BooksPage() {
                         children: "Explore Our Collection"
                     }, void 0, false, {
                         fileName: "[project]/src/app/books/page.tsx",
-                        lineNumber: 77,
+                        lineNumber: 85,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -759,13 +775,13 @@ function BooksPage() {
                         children: "Find your next adventure. Search by title or filter by category."
                     }, void 0, false, {
                         fileName: "[project]/src/app/books/page.tsx",
-                        lineNumber: 80,
+                        lineNumber: 88,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/books/page.tsx",
-                lineNumber: 76,
+                lineNumber: 84,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -778,7 +794,7 @@ function BooksPage() {
                                 className: "absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/books/page.tsx",
-                                lineNumber: 87,
+                                lineNumber: 95,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -792,13 +808,13 @@ function BooksPage() {
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/src/app/books/page.tsx",
-                                lineNumber: 88,
+                                lineNumber: 96,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/books/page.tsx",
-                        lineNumber: 86,
+                        lineNumber: 94,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -816,12 +832,12 @@ function BooksPage() {
                                         placeholder: "All Categories"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/books/page.tsx",
-                                        lineNumber: 108,
+                                        lineNumber: 116,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/books/page.tsx",
-                                    lineNumber: 107,
+                                    lineNumber: 115,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -830,29 +846,29 @@ function BooksPage() {
                                             children: category
                                         }, category, false, {
                                             fileName: "[project]/src/app/books/page.tsx",
-                                            lineNumber: 112,
+                                            lineNumber: 120,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/books/page.tsx",
-                                    lineNumber: 110,
+                                    lineNumber: 118,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/books/page.tsx",
-                            lineNumber: 100,
+                            lineNumber: 108,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/books/page.tsx",
-                        lineNumber: 99,
+                        lineNumber: 107,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/books/page.tsx",
-                lineNumber: 85,
+                lineNumber: 93,
                 columnNumber: 7
             }, this),
             paginatedBooks.length > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -860,15 +876,16 @@ function BooksPage() {
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8",
                         children: paginatedBooks.map((book)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$BookCard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                book: book
+                                book: book,
+                                hasAccess: userLibrary.includes(book.id)
                             }, book.id, false, {
                                 fileName: "[project]/src/app/books/page.tsx",
-                                lineNumber: 125,
+                                lineNumber: 133,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/books/page.tsx",
-                        lineNumber: 123,
+                        lineNumber: 131,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -883,7 +900,7 @@ function BooksPage() {
                                     children: "Previous"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/books/page.tsx",
-                                    lineNumber: 131,
+                                    lineNumber: 139,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -896,7 +913,7 @@ function BooksPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/books/page.tsx",
-                                    lineNumber: 138,
+                                    lineNumber: 146,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -906,18 +923,18 @@ function BooksPage() {
                                     children: "Next"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/books/page.tsx",
-                                    lineNumber: 141,
+                                    lineNumber: 149,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/books/page.tsx",
-                            lineNumber: 130,
+                            lineNumber: 138,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/books/page.tsx",
-                        lineNumber: 129,
+                        lineNumber: 137,
                         columnNumber: 11
                     }, this)
                 ]
@@ -929,7 +946,7 @@ function BooksPage() {
                         children: "No Books Found"
                     }, void 0, false, {
                         fileName: "[project]/src/app/books/page.tsx",
-                        lineNumber: 155,
+                        lineNumber: 163,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -937,23 +954,23 @@ function BooksPage() {
                         children: "There are currently no books matching your criteria. Try adjusting your search or filters."
                     }, void 0, false, {
                         fileName: "[project]/src/app/books/page.tsx",
-                        lineNumber: 156,
+                        lineNumber: 164,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/books/page.tsx",
-                lineNumber: 154,
+                lineNumber: 162,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/books/page.tsx",
-        lineNumber: 75,
+        lineNumber: 83,
         columnNumber: 5
     }, this);
 }
-_s(BooksPage, "2HbUn0mi+cfKF0O+F/FFSnSqNC8=", false, function() {
+_s(BooksPage, "Eaw6ZvGxfPa+nivW1+tZYsR5Kx0=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"]
     ];

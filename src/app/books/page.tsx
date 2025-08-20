@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Book } from "@/lib/types";
+import type { Book, User } from "@/lib/types";
 import { useSearchParams } from 'next/navigation';
 
 const BOOKS_PER_PAGE = 8;
@@ -24,6 +25,8 @@ export default function BooksPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [books, setBooks] = useState<Book[]>([]); 
+  const [user, setUser] = useState<User | null>(null);
+  const [userLibrary, setUserLibrary] = useState<string[]>([]);
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -32,15 +35,20 @@ export default function BooksPage() {
     if (query) {
         setSearchTerm(query);
     }
-  }, [searchParams]);
-  
-  useEffect(() => {
-    if (hasMounted) {
-      // Load books published by authors from localStorage.
-      const publishedBooks: Book[] = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
-      setBooks(publishedBooks);
+    
+    // Load books published by authors from localStorage.
+    const publishedBooks: Book[] = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
+    setBooks(publishedBooks);
+
+    const loggedInUserString = localStorage.getItem('loggedInUser');
+    if (loggedInUserString) {
+        const loggedInUser: User = JSON.parse(loggedInUserString);
+        setUser(loggedInUser);
+
+        const allLibraryData = JSON.parse(localStorage.getItem('userLibrary') || '{}');
+        setUserLibrary(allLibraryData[loggedInUser.id] || []);
     }
-  }, [hasMounted]);
+  }, [searchParams]);
 
   const filteredBooks = useMemo(() => {
     const lowercasedTerm = searchTerm.toLowerCase();
@@ -122,7 +130,7 @@ export default function BooksPage() {
         <>
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
             {paginatedBooks.map((book) => (
-              <BookCard key={book.id} book={book} />
+              <BookCard key={book.id} book={book} hasAccess={userLibrary.includes(book.id)} />
             ))}
           </div>
 

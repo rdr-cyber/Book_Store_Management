@@ -7,13 +7,13 @@ import { useSearchParams, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Star, Truck, ShieldCheck, Plus, Minus, BookOpen, FileWarning, MessageSquare, CornerDownRight, UserPlus } from "lucide-react";
+import { Star, Truck, ShieldCheck, Plus, Minus, BookOpen, FileWarning, MessageSquare, CornerDownRight, UserPlus, Gift } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import BookCard from "@/components/BookCard";
 import { useState, useEffect, useMemo, FormEvent } from "react";
-import type { Book, User, Review } from "@/lib/types";
+import type { Book, User, Review, Gift as GiftType } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -89,6 +89,10 @@ export default function BookDetailPage() {
 
   const handleAddToCart = () => {
     if (!book) return;
+    if (hasPurchased) {
+        toast({ variant: 'destructive', title: "Already Owned", description: "You already own this book."});
+        return;
+    }
     const cartString = localStorage.getItem('cart') || '[]';
     const cart: { id: string; quantity: number }[] = JSON.parse(cartString);
     const existingItem = cart.find((item: { id: string }) => item.id === book.id);
@@ -106,11 +110,16 @@ export default function BookDetailPage() {
         title: "Added to Cart!",
         description: `${quantity} x ${book.title} has been added.`,
       });
+      window.dispatchEvent(new Event('cartUpdated'));
     }
   };
 
   const handleBuyNow = () => {
       if (!book) return;
+       if (hasPurchased) {
+        toast({ variant: 'destructive', title: "Already Owned", description: "You already own this book."});
+        return;
+    }
       const buyNowItem = { id: book.id, quantity: quantity };
       localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
       router.push('/checkout');
@@ -288,6 +297,10 @@ export default function BookDetailPage() {
                             Book File Not Available
                         </Button>
                     )}
+                     <Button variant="secondary" className="w-full" onClick={() => router.push(`/gift/${book.id}`)} disabled={!book.bookFileUrl}>
+                        <Gift className="mr-2"/>
+                        Gift this Book
+                    </Button>
                 </>
               ) : (
                 <Card className="bg-secondary/50">
@@ -295,11 +308,11 @@ export default function BookDetailPage() {
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>Quantity</span>
-                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(-1)}>
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(-1)} disabled={book.stock === 0}>
                             <Minus className="h-4 w-4" />
                         </Button>
                         <span className="font-bold text-lg w-5 text-center">{quantity}</span>
-                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(1)}>
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(1)} disabled={book.stock === 0}>
                             <Plus className="h-4 w-4" />
                         </Button>
                         </div>
@@ -432,15 +445,12 @@ export default function BookDetailPage() {
             )}
         </div>
         <div>
-             {user && hasPurchased && (
+             {user && hasPurchased && !hasAlreadyReviewed && (
                 <Card>
                     <CardHeader>
-                        <CardTitle className="font-headline text-2xl">{hasAlreadyReviewed ? "You've Already Reviewed This Book" : "Leave a Review"}</CardTitle>
+                        <CardTitle className="font-headline text-2xl">Leave a Review</CardTitle>
                     </CardHeader>
                     <CardContent>
-                       {hasAlreadyReviewed ? (
-                           <p className="text-muted-foreground">Thank you for your feedback!</p>
-                       ) : (
                          <form onSubmit={handleReviewSubmit} className="space-y-4">
                             <div>
                                 <Label>Your Rating</Label>
@@ -460,9 +470,18 @@ export default function BookDetailPage() {
                             </div>
                             <Button type="submit" className="w-full">Submit Review</Button>
                         </form>
-                       )}
                     </CardContent>
                 </Card>
+            )}
+             {user && hasPurchased && hasAlreadyReviewed && (
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">Thank You!</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground">You have already submitted a review for this book.</p>
+                    </CardContent>
+                 </Card>
             )}
         </div>
       </div>
@@ -482,11 +501,3 @@ export default function BookDetailPage() {
     </div>
   );
 }
-
-    
-
-    
-
-    
-
-    

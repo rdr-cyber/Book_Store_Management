@@ -1,5 +1,9 @@
 {
+  "/books/page": "app/books/page.js",
+  "/checkout/page": "app/checkout/page.js",
+  "/checkout/success/page": "app/checkout/success/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/gift/[id]/page": "app/gift/[id]/page.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js",
   "/reader/dashboard/page": "app/reader/dashboard/page.js"

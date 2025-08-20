@@ -42,7 +42,8 @@ type LightweightOrderItem = {
 export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [orderItems, setOrderItems] = useState<CartItem[]>([]);
+  const [isBuyNow, setIsBuyNow] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   
   // Shipping State
@@ -65,28 +66,25 @@ export default function CheckoutPage() {
     
     const buyNowItemString = localStorage.getItem('buyNowItem');
     const regularCartString = localStorage.getItem('cart');
-    let itemsToCheckout: CartItem[] = [];
+    let itemsToCheckout: LightweightOrderItem[] = [];
     
-    const allPublishedBooks: Book[] = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
-
     if (buyNowItemString) {
-        const buyNowItem = JSON.parse(buyNowItemString);
-        const bookDetails = allPublishedBooks.find(b => b.id === buyNowItem.id);
-
-        if (bookDetails) {
-            itemsToCheckout = [{ ...bookDetails, quantity: buyNowItem.quantity }];
-        }
+        itemsToCheckout = [JSON.parse(buyNowItemString)];
+        setIsBuyNow(true);
     } else if (regularCartString) {
-        const cartData: LightweightOrderItem[] = JSON.parse(regularCartString);
-        itemsToCheckout = cartData.map(item => {
-            const bookDetails = allPublishedBooks.find(b => b.id === item.id);
-            return bookDetails ? { ...bookDetails, quantity: item.quantity } : null;
-        }).filter((i): i is CartItem => i !== null);
+        itemsToCheckout = JSON.parse(regularCartString);
+        setIsBuyNow(false);
     }
     
-    setCartItems(itemsToCheckout);
+    const allPublishedBooks: Book[] = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
+    const hydratedItems = itemsToCheckout.map(item => {
+        const bookDetails = allPublishedBooks.find(b => b.id === item.id);
+        return bookDetails ? { ...bookDetails, quantity: item.quantity } : null;
+    }).filter((i): i is CartItem => i !== null);
     
-    if (itemsToCheckout.length === 0 && hasMounted) {
+    setOrderItems(hydratedItems);
+    
+    if (hydratedItems.length === 0 && hasMounted) {
         router.replace('/books');
     }
 
@@ -100,7 +98,7 @@ export default function CheckoutPage() {
 
   }, [router, hasMounted]);
 
-  const subtotal = cartItems.reduce(
+  const subtotal = orderItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
@@ -143,7 +141,7 @@ export default function CheckoutPage() {
     const user: User = JSON.parse(userString);
 
     const orderDetails = {
-      items: cartItems.map(item => ({ 
+      items: orderItems.map(item => ({ 
           id: item.id, 
           title: item.title,
           quantity: item.quantity,
@@ -171,7 +169,7 @@ export default function CheckoutPage() {
 
         // Create transaction records for author dashboard
         const existingTransactions: Transaction[] = JSON.parse(localStorage.getItem('transactions') || '[]');
-        const newTransactions: Transaction[] = cartItems.map(item => ({
+        const newTransactions: Transaction[] = orderItems.map(item => ({
             id: `txn-${item.id}-${Date.now()}`,
             userId: user.id,
             bookId: item.id,
@@ -185,7 +183,7 @@ export default function CheckoutPage() {
 
         // Update book stock
         const allPublishedBooks: Book[] = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
-        cartItems.forEach(cartItem => {
+        orderItems.forEach(cartItem => {
             const bookIndex = allPublishedBooks.findIndex(book => book.id === cartItem.id);
             if(bookIndex > -1) {
                 allPublishedBooks[bookIndex].stock -= cartItem.quantity;
@@ -198,21 +196,26 @@ export default function CheckoutPage() {
         // "Send" confirmation email
         await sendOrderConfirmationEmail({ email, orderDetails });
         
+        // Clear cart or buy now item
+        if (isBuyNow) {
+            localStorage.removeItem('buyNowItem');
+        } else {
+            const cartItems: LightweightOrderItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
+            const orderItemIds = new Set(orderItems.map(item => item.id));
+            const updatedCart = cartItems.filter(item => !orderItemIds.has(item.id));
+            localStorage.setItem('cart', JSON.stringify(updatedCart));
+            window.dispatchEvent(new Event('cartUpdated'));
+        }
+        
+        router.push('/checkout/success');
+        
     } catch (error) {
         toast({ variant: 'destructive', title: 'Error', description: 'Could not save order. Storage might be full.' });
         return;
     }
-    
-    if (localStorage.getItem('buyNowItem')) {
-        localStorage.removeItem('buyNowItem');
-    } else {
-        localStorage.removeItem('cart');
-    }
-    
-    router.push('/checkout/success');
   }
 
-  if (!hasMounted || cartItems.length === 0) {
+  if (!hasMounted || orderItems.length === 0) {
     return null; // or a loading skeleton
   }
 
@@ -351,7 +354,7 @@ export default function CheckoutPage() {
                     <span>Total</span>
                     <span>${total.toFixed(2)}</span>
                   </div>
-                  <Button type="submit" size="lg" className="w-full" disabled={cartItems.length === 0}>
+                  <Button type="submit" size="lg" className="w-full" disabled={orderItems.length === 0}>
                       <Lock className="mr-2 h-4 w-4" />
                       Place Order
                   </Button>
