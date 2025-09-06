@@ -51,12 +51,41 @@ export default function Home() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   
+  // Pre-defined particle positions to avoid hydration mismatch
+  const particlePositions = [
+    { left: 24.8, top: 23.5 },
+    { left: 30.3, top: 11.6 },
+    { left: 77.6, top: 71.3 },
+    { left: 75.7, top: 14.2 },
+    { left: 7.7, top: 74.2 },
+    { left: 54.2, top: 32.0 },
+    { left: 66.8, top: 67.8 },
+    { left: 49.6, top: 75.8 },
+    { left: 80.4, top: 57.9 },
+    { left: 80.4, top: 99.3 },
+    { left: 89.6, top: 58.8 },
+    { left: 98.8, top: 70.1 },
+    { left: 55.0, top: 57.3 },
+    { left: 20.7, top: 26.0 },
+    { left: 11.1, top: 31.4 },
+    { left: 48.5, top: 3.7 },
+    { left: 64.4, top: 46.5 },
+    { left: 39.5, top: 5.7 },
+    { left: 81.0, top: 98.0 },
+    { left: 11.4, top: 99.9 }
+  ];
+  
   const cursorXSpring = useTransform(mouseX, (value) => value);
   const cursorYSpring = useTransform(mouseY, (value) => value);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -1193,13 +1222,13 @@ export default function Home() {
           />
           
           {/* Particle System */}
-          {[...Array(20)].map((_, i) => (
+          {isMounted && particlePositions.map((particle, i) => (
             <motion.div
               key={i}
               className="absolute w-2 h-2 bg-cyan-400 rounded-full opacity-30"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                left: `${particle.left}%`,
+                top: `${particle.top}%`,
               }}
               animate={{
                 y: [-20, 20, -20],
@@ -1208,10 +1237,10 @@ export default function Home() {
                 scale: [1, 1.5, 1]
               }}
               transition={{
-                duration: 3 + Math.random() * 2,
+                duration: 3 + (i % 3) * 0.5, // Varied duration based on index
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: Math.random() * 2
+                delay: (i % 5) * 0.4 // Varied delay based on index
               }}
             />
           ))}
