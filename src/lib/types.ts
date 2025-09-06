@@ -3,7 +3,8 @@
 export type Book = {
   id: string;
   title: string;
-  author: string; 
+  author: string; // Author's name for display
+  authorName?: string; // Alias for database compatibility
   authorId: string; // This would be the author's user ID
   price: number;
   imageUrl: string;
