@@ -4,35 +4,72 @@
   <p>Created by <strong>rdr-cyber</strong></p>
   
   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rdr-cyber/Book_Store_Management)
-  [![Live Demo](https://img.shields.io/badge/Live-Demo-success)](https://your-app-url.vercel.app)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+  [![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=vercel)](https://book-store-management-rdr-cyber.vercel.app)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
+  [![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 </div>
 
 ## 🚀 Live Demo
 
-Experience ShelfWise live at: [https://your-app-url.vercel.app](https://your-app-url.vercel.app)
+**Experience ShelfWise live at**: [https://book-store-management-rdr-cyber.vercel.app](https://book-store-management-rdr-cyber.vercel.app)
 
-## ⚡ Quick Start
+### ✨ What You Can Do:
+- 📚 Explore the stunning futuristic homepage
+- 🔍 Browse books with AI-powered recommendations 
+- 👤 Register as Reader or Author
+- 🛒 Test the shopping cart functionality
+- 💳 Experience the checkout process
+- 📊 View author dashboards and analytics
+- 📱 Enjoy responsive design on any device
 
+## ⚡ Quick Deploy
+
+### Deploy to Vercel (Recommended)
+
+**Option 1: One-Click Deploy**
+1. Click the deploy button above ↑
+2. Connect your GitHub account
+3. Deploy automatically
+
+**Option 2: Manual Deploy**
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import `https://github.com/rdr-cyber/Book_Store_Management`
+3. Click "Deploy"
+
+**Option 3: CLI Deploy**
 ```bash
-# Clone the repository
-git clone https://github.com/rdr-cyber/Book_Store_Management.git
-
-# Navigate to project directory
-cd Book_Store_Management
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your configuration
-
-# Run development server
-npm run dev
+npm i -g vercel
+vercel --prod
 ```
 
-Open [http://localhost:9002](http://localhost:9002) to view the application.
+### Deploy to Netlify
+1. Go to [netlify.com](https://netlify.com)
+2. Connect GitHub repository
+3. Build command: `npm run build`
+4. Publish directory: `.next`
+
+### Deploy to Railway
+1. Go to [railway.app](https://railway.app)
+2. Deploy from GitHub
+3. Automatic configuration
+
+## 🛠️ Environment Variables
+
+**Required for full functionality:**
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+JWT_SECRET=your_random_secret
+```
+
+**Optional for advanced features:**
+```env
+RAZORPAY_KEY_ID=your_razorpay_key
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+```
+
+> ℹ️ **Demo Mode**: App works perfectly without environment variables!
 
 ## Introduction
 
