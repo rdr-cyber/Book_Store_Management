@@ -1,267 +1,237 @@
+'use client';
 
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  BookOpen, 
+  TrendingUp, 
+  Users, 
+  Star,
+  Search,
+  ShoppingCart,
+  Heart,
+  Clock,
+  Sparkles
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 
-"use client";
+const fadeUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+};
 
-import { useState, useEffect } from "react";
-import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Book, Compass, Lightbulb, BookHeart, Users, Newspaper, Gift } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import type { Book as BookType, User, Gift as GiftType } from "@/lib/types";
-import BookCard from "@/components/BookCard";
-
-type HydratedGift = {
-    book: BookType;
-    giver: User;
-    createdAt: Date;
-    id: string;
-}
+const stagger = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
 
 export default function ReaderDashboard() {
-  const [libraryBooks, setLibraryBooks] = useState<BookType[]>([]);
-  const [followedAuthorBooks, setFollowedAuthorBooks] = useState<BookType[]>([]);
-  const [receivedGifts, setReceivedGifts] = useState<HydratedGift[]>([]);
-  const [hasMounted, setHasMounted] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    
-    try {
-        const loggedInUserString = localStorage.getItem('loggedInUser');
-        if (loggedInUserString) {
-            const loggedInUser: User = JSON.parse(loggedInUserString);
-
-            if (loggedInUser.role !== 'reader') {
-                router.push('/login?role=reader');
-                return;
-            }
-
-            setUser(loggedInUser);
-
-            const allPublishedBooks: BookType[] = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
-            const allUsers: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            // Hydrate library
-            const userLibraryData = JSON.parse(localStorage.getItem('userLibrary') || '{}');
-            const userBookIds: string[] = userLibraryData[loggedInUser.id] || [];
-            const booksInLibrary = allPublishedBooks.filter(book => userBookIds.includes(book.id));
-            setLibraryBooks(booksInLibrary);
-
-            // Hydrate followed authors' books
-            const userFollows = JSON.parse(localStorage.getItem('userFollows') || '{}');
-            const followedAuthorIds: string[] = userFollows[loggedInUser.id] || [];
-            const booksFromFollowed = allPublishedBooks
-                .filter(book => followedAuthorIds.includes(book.authorId))
-                .sort((a, b) => parseInt(b.id.split('-')[1]) - parseInt(a.id.split('-')[1])); // Sort by newest first
-            setFollowedAuthorBooks(booksFromFollowed);
-
-            // Hydrate received gifts
-            const allGifts: GiftType[] = JSON.parse(localStorage.getItem('gifts') || '[]');
-            const userGifts = allGifts.filter(gift => gift.recipientUserId === loggedInUser.id);
-            const hydratedGifts = userGifts.map(gift => {
-                const book = allPublishedBooks.find(b => b.id === gift.bookId);
-                const giver = allUsers.find(u => u.id === gift.giverUserId);
-                if (book && giver) {
-                    return { ...gift, book, giver };
-                }
-                return null;
-            }).filter((g): g is HydratedGift => g !== null)
-              .sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-            setReceivedGifts(hydratedGifts);
-            
-            setHasMounted(true);
-
-        } else {
-            router.push('/login?role=reader');
-            setLibraryBooks([]);
-            setFollowedAuthorBooks([]);
-            setReceivedGifts([]);
-        }
-    } catch(e) {
-        setLibraryBooks([]);
-        setFollowedAuthorBooks([]);
-        setReceivedGifts([]);
+    const userData = localStorage.getItem('loggedInUser') || localStorage.getItem('currentUser');
+    if (userData) {
+      setUser(JSON.parse(userData));
     }
-  }, [router]);
+  }, []);
 
-  if (!hasMounted || !user) {
-      return null; // Or a loading skeleton
-  }
+  const stats = [
+    { label: 'Books Read', value: '24', icon: BookOpen, color: 'from-blue-500 to-cyan-500' },
+    { label: 'Reading Streak', value: '12 days', icon: TrendingUp, color: 'from-purple-500 to-pink-500' },
+    { label: 'Authors Following', value: '8', icon: Users, color: 'from-green-500 to-emerald-500' },
+    { label: 'Reviews Written', value: '15', icon: Star, color: 'from-orange-500 to-yellow-500' },
+  ];
+
+  const recentBooks = [
+    { id: 1, title: 'The Digital Frontier', author: 'Sarah Chen', progress: 75 },
+    { id: 2, title: 'AI Revolution', author: 'Michael Roberts', progress: 45 },
+    { id: 3, title: 'Future Insights', author: 'Emma Thompson', progress: 90 },
+  ];
+
+  const recommendations = [
+    { id: 1, title: 'Quantum Computing Basics', author: 'Dr. Alan Turing', rating: 4.8 },
+    { id: 2, title: 'Machine Learning Ethics', author: 'Prof. Ada Lovelace', rating: 4.9 },
+    { id: 3, title: 'The Data Revolution', author: 'Grace Hopper', rating: 4.7 },
+  ];
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold font-headline">Reader Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Welcome back, {user?.firstName || "Reader"}! Here's your personalized space.
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+          className="text-center space-y-4"
+        >
+          <motion.h1 
+            variants={fadeUp}
+            className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-900 via-blue-800 to-slate-900 bg-clip-text text-transparent"
+          >
+            Welcome back, {user?.firstName || 'Reader'}! 👋
+          </motion.h1>
+          <motion.p 
+            variants={fadeUp}
+            className="text-xl text-slate-600 max-w-2xl mx-auto"
+          >
+            Continue your literary journey and discover new worlds of knowledge.
+          </motion.p>
+        </motion.div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Main content - Library and Recommendations */}
-        <div className="lg:col-span-2 space-y-8">
-          {libraryBooks.length > 0 && (
-            <Card>
-                <CardHeader>
-                <CardTitle className="flex items-center">
-                    <BookHeart className="mr-3" />
-                    Continue Reading
+        {/* Stats Grid */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6"
+        >
+          {stats.map((stat, index) => (
+            <motion.div key={index} variants={fadeUp}>
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-500 group">
+                <CardContent className="p-6 text-center">
+                  <div className={`w-16 h-16 bg-gradient-to-r ${stat.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <stat.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-slate-900 mb-1">{stat.value}</div>
+                  <div className="text-sm text-slate-600">{stat.label}</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Quick Actions */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+          className="grid md:grid-cols-2 gap-8"
+        >
+          {/* Search Books */}
+          <motion.div variants={fadeUp}>
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Search className="w-5 h-5" />
+                  <span>Find Your Next Read</span>
                 </CardTitle>
-                </CardHeader>
-                <CardContent>
-                
-                    <div className="flex gap-6 items-center">
-                    <Image
-                        src={libraryBooks[0].imageUrl}
-                        alt={libraryBooks[0].title}
-                        width={120}
-                        height={180}
-                        className="rounded-md object-cover aspect-[2/3]"
-                        data-ai-hint="book cover"
-                    />
-                    <div>
-                        <h3 className="text-xl font-headline font-semibold">
-                        {libraryBooks[0].title}
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                        by {libraryBooks[0].author}
-                        </p>
-                        <Button asChild>
-                        <Link href={`/books/${libraryBooks[0].id}?fromLibrary=true`}>
-                            Jump Back In
-                        </Link>
-                        </Button>
-                    </div>
-                    </div>
-                
-                </CardContent>
-            </Card>
-          )}
-
-           {receivedGifts.length > 0 && (
-              <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center">
-                        <Gift className="mr-3" />
-                        Gifts Received
-                    </CardTitle>
-                    <CardDescription>Books that have been gifted to you by other readers.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {receivedGifts.slice(0, 3).map((gift) => (
-                           <div key={gift.id}>
-                               <BookCard book={gift.book} hasAccess={true} />
-                               <p className="text-sm text-center mt-2 text-muted-foreground">A gift from {gift.giver.firstName} {gift.giver.lastName}</p>
-                           </div>
-                        ))}
-                    </div>
-                </CardContent>
-              </Card>
-          )}
-
-          {followedAuthorBooks.length > 0 && (
-              <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center">
-                        <Newspaper className="mr-3" />
-                        New From Authors You Follow
-                    </CardTitle>
-                    <CardDescription>The latest books from authors you're following.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {followedAuthorBooks.slice(0, 3).map((book) => (
-                           <BookCard key={book.id} book={book} hasAccess={libraryBooks.some(libBook => libBook.id === book.id)} />
-                        ))}
-                    </div>
-                </CardContent>
-              </Card>
-          )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle>My Library</CardTitle>
-              <CardDescription>
-                An overview of your purchased books.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {libraryBooks.slice(0, 4).map((book) => (
-                  <Link key={book.id} href={`/books/${book.id}?fromLibrary=true`}>
-                    <Image
-                      src={book.imageUrl}
-                      alt={book.title}
-                      width={150}
-                      height={225}
-                      className="rounded-md object-cover aspect-[2/3] transition-all hover:opacity-80"
-                      data-ai-hint="book cover"
-                    />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Input
+                  placeholder="Search by title, author, or genre..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border-0 bg-slate-50"
+                />
+                <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  <Link href={`/books${searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : ''}`}>
+                    Browse Books
                   </Link>
-                ))}
-              </div>
-              {libraryBooks.length === 0 && (
-                <p className="text-muted-foreground">Your library is empty.</p>
-              )}
-            </CardContent>
-            {libraryBooks.length > 0 && ( // Show View Full Library only if there are books
-              <CardFooter>
-                 <Button variant="outline" asChild>
-                    <Link href="/reader/library">View Full Library</Link>
-                 </Button>
-              </CardFooter>
-            )}
-          </Card>
-        </div>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        {/* Sidebar */}
-        <div className="lg:col-span-1 space-y-8">
-          <Card className="bg-secondary/50">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Compass className="mr-3" />
-                Explore
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <Button asChild size="lg">
-                <Link href="/books">Browse All Books</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/reader/library">Go to My Library</Link>
-              </Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Lightbulb className="mr-3" />
-                AI Recommendations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Get personalized book suggestions based on your taste.
-              </p>
-              <Button asChild className="w-full">
-                <Link href="/ai/suggestions?role=reader">
-                  Find My Next Read
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+          {/* AI Recommendations */}
+          <motion.div variants={fadeUp}>
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Sparkles className="w-5 h-5" />
+                  <span>AI Recommendations</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600 mb-4">Get personalized book recommendations powered by AI.</p>
+                <Button asChild className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                  <Link href="/ai/suggestions?role=reader">
+                    Get AI Suggestions
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
+
+        {/* Reading Progress & Recommendations */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+          className="grid lg:grid-cols-2 gap-8"
+        >
+          {/* Continue Reading */}
+          <motion.div variants={fadeUp}>
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Clock className="w-5 h-5" />
+                  <span>Continue Reading</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {recentBooks.map((book) => (
+                  <div key={book.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                    <div className="w-12 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                      <BookOpen className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-slate-900">{book.title}</h4>
+                      <p className="text-sm text-slate-600">by {book.author}</p>
+                      <div className="mt-2 w-full bg-slate-200 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" 
+                          style={{ width: `${book.progress}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">{book.progress}% complete</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Recommended for You */}
+          <motion.div variants={fadeUp}>
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Heart className="w-5 h-5" />
+                  <span>Recommended for You</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {recommendations.map((book) => (
+                  <div key={book.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                    <div className="w-12 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center">
+                      <Star className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-slate-900">{book.title}</h4>
+                      <p className="text-sm text-slate-600">by {book.author}</p>
+                      <div className="flex items-center mt-1">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span className="text-sm text-slate-600 ml-1">{book.rating}</span>
+                      </div>
+                    </div>
+                    <Button size="sm" variant="outline">
+                      <ShoppingCart className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

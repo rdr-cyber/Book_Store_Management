@@ -1,0 +1,3 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { withAuth, withRole } from '@/middleware/auth';
+import { getBooksByAuthor } from '@/lib/database';\n\n// GET books by author (authors only)\nexport const GET = withRole(['author'])(async (request: NextRequest, user) => {\n  try {\n    const books = await getBooksByAuthor(user.uid);\n    return NextResponse.json(books, { status: 200 });\n  } catch (error: any) {\n    console.error('Get author books error:', error);\n    return NextResponse.json(\n      { error: 'Failed to fetch your books' },\n      { status: 500 }\n    );\n  }\n});

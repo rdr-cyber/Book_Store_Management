@@ -1,279 +1,256 @@
+'use client';
 
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  BookOpen, 
+  TrendingUp, 
+  Users, 
+  DollarSign,
+  PlusCircle,
+  BarChart3,
+  Star,
+  Eye,
+  Sparkles,
+  Crown
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
-"use client";
+const fadeUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+};
 
-import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Book, DollarSign, Users, BookUp, Pencil, Star } from "lucide-react";
-import Link from "next/link";
-import type { UserRole, Book as BookType, Transaction, Review } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
-
-type UserInfo = {
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-    id: string; 
-}
-
-type BookSales = {
-    [bookId: string]: number;
-}
-
-type BookReviews = {
-    [bookId: string]: {
-        count: number;
-        average: number;
+const stagger = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
     }
-}
-
-type FilterType = 'all' | 'outOfStock' | 'lowStock';
+  }
+};
 
 export default function AuthorDashboard() {
-  const [user, setUser] = useState<UserInfo | null>(null);
-  const [authorBooks, setAuthorBooks] = useState<BookType[]>([]);
-  const [totalRevenue, setTotalRevenue] = useState(0);
-  const [totalSales, setTotalSales] = useState(0);
-  const [bookSales, setBookSales] = useState<BookSales>({});
-  const [bookReviews, setBookReviews] = useState<BookReviews>({});
-  const [followers, setFollowers] = useState(0);
-  const [filter, setFilter] = useState<FilterType>('all');
-  const { toast } = useToast();
-  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const published = params.get('published');
-    const edited = params.get('edited');
-
-    if (published === 'true') {
-      toast({
-        title: "Book Published!",
-        description: "Your book is now live in the marketplace.",
-      });
-      window.history.replaceState({}, document.title, window.location.pathname);
+    const userData = localStorage.getItem('loggedInUser') || localStorage.getItem('currentUser');
+    if (userData) {
+      setUser(JSON.parse(userData));
     }
-     if (edited === 'true') {
-      toast({
-        title: "Book Updated!",
-        description: "Your book details have been successfully updated.",
-      });
-      window.history.replaceState({}, document.title, window.location.pathname);
+  }, []);
+
+  const stats = [
+    { label: 'Published Books', value: '12', icon: BookOpen, color: 'from-blue-500 to-cyan-500', change: '+2 this month' },
+    { label: 'Total Sales', value: '1,247', icon: TrendingUp, color: 'from-green-500 to-emerald-500', change: '+15% this month' },
+    { label: 'Revenue', value: '$8,420', icon: DollarSign, color: 'from-purple-500 to-pink-500', change: '+22% this month' },
+    { label: 'Followers', value: '342', icon: Users, color: 'from-orange-500 to-red-500', change: '+8 this week' },
+  ];
+
+  const recentBooks = [
+    { id: 1, title: 'The AI Revolution', sales: 156, revenue: '$780', rating: 4.8 },
+    { id: 2, title: 'Future Perspectives', sales: 89, revenue: '$445', rating: 4.6 },
+    { id: 3, title: 'Digital Transformation', sales: 203, revenue: '$1,015', rating: 4.9 },
+  ];
+
+  const quickActions = [
+    {
+      title: 'Publish New Book',
+      description: 'Create and publish your next masterpiece',
+      icon: PlusCircle,
+      color: 'from-blue-600 to-purple-600',
+      href: '/author/publish'
+    },
+    {
+      title: 'View Analytics',
+      description: 'Track your book performance and sales',
+      icon: BarChart3,
+      color: 'from-green-600 to-teal-600',
+      href: '/author/analytics'
+    },
+    {
+      title: 'AI Book Ideas',
+      description: 'Get AI-powered writing suggestions',
+      icon: Sparkles,
+      color: 'from-purple-600 to-pink-600',
+      href: '/ai/suggestions?role=author'
+    },
+    {
+      title: 'Manage Books',
+      description: 'Edit and update your published books',
+      icon: BookOpen,
+      color: 'from-orange-600 to-red-600',
+      href: '/author/books'
     }
-    
-    try {
-      const loggedInUser = localStorage.getItem('loggedInUser');
-      if (loggedInUser) {
-        const parsedUser: UserInfo = JSON.parse(loggedInUser);
-        if (parsedUser.role !== 'author') {
-            router.push('/login?role=author');
-            return;
-        }
-
-        setUser(parsedUser);
-
-        // Load books from localStorage
-        const allPublishedBooks: BookType[] = JSON.parse(localStorage.getItem('publishedBooks') || '[]');
-        const userBooks = allPublishedBooks.filter(book => book.authorId === parsedUser.id);
-        setAuthorBooks(userBooks);
-        
-        // Load transactions and calculate stats
-        const allTransactions: Transaction[] = JSON.parse(localStorage.getItem('transactions') || '[]');
-        const authorTransactions = allTransactions.filter(txn => userBooks.some(b => b.id === txn.bookId));
-
-        const revenue = authorTransactions.reduce((acc, txn) => acc + txn.amount, 0);
-        setTotalRevenue(revenue);
-        
-        const sales = authorTransactions.reduce((acc, txn) => acc + txn.quantity, 0);
-        setTotalSales(sales);
-        
-        const salesByBook = authorTransactions.reduce((acc, txn) => {
-            acc[txn.bookId] = (acc[txn.bookId] || 0) + txn.quantity;
-            return acc;
-        }, {} as BookSales);
-        setBookSales(salesByBook);
-
-        // Load reviews and calculate stats
-        const allReviews: Review[] = JSON.parse(localStorage.getItem('bookReviews') || '[]');
-        const reviewsByBook = userBooks.reduce((acc, book) => {
-            const bookReviews = allReviews.filter(r => r.bookId === book.id);
-            const totalRating = bookReviews.reduce((sum, r) => sum + r.rating, 0);
-            acc[book.id] = {
-                count: bookReviews.length,
-                average: bookReviews.length > 0 ? totalRating / bookReviews.length : 0
-            };
-            return acc;
-        }, {} as BookReviews);
-        setBookReviews(reviewsByBook);
-
-
-        // Calculate Followers
-        const userFollows = JSON.parse(localStorage.getItem('userFollows') || '{}');
-        const followerCount = Object.values(userFollows).filter(followedAuthors => 
-            (followedAuthors as string[]).includes(parsedUser.id)
-        ).length;
-        setFollowers(followerCount);
-
-      } else {
-        router.push('/login?role=author');
-      }
-    } catch (error) {
-        console.error("Error loading author dashboard data:", error);
-        setUser(null);
-        setAuthorBooks([]);
-    }
-  }, [toast, router]);
-  
-  const filteredBooks = useMemo(() => {
-    if (filter === 'outOfStock') {
-        return authorBooks.filter(book => book.stock === 0);
-    }
-    if (filter === 'lowStock') {
-        return authorBooks.filter(book => book.stock > 0 && book.stock <= book.reorderPoint);
-    }
-    return authorBooks;
-  }, [authorBooks, filter]);
-
-  if (!user) {
-    return null; // or a loading skeleton
-  }
-
+  ];
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-            <h1 className="text-4xl font-bold font-headline">Author Dashboard</h1>
-            {user && (
-                 <p className="text-muted-foreground mt-2">Welcome back, {user.firstName} {user.lastName}!</p>
-            )}
-        </div>
-        <Button asChild>
-            <Link href="/author/publish">
-                <BookUp className="mr-2" />
-                Publish New Book
-            </Link>
-        </Button>
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Based on completed sales</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Books Sold</CardTitle>
-            <Book className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+{totalSales}</div>
-            <p className="text-xs text-muted-foreground">Total units sold</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Followers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{followers}</div>
-             <p className="text-xs text-muted-foreground">{followers === 1 ? 'person follows you' : 'people follow you'}</p>
-          </CardContent>
-        </Card>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+          className="text-center space-y-4"
+        >
+          <motion.div variants={fadeUp} className="flex items-center justify-center space-x-3">
+            <Crown className="w-8 h-8 text-purple-600" />
+            <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-900 via-purple-800 to-slate-900 bg-clip-text text-transparent">
+              Author Studio
+            </h1>
+          </motion.div>
+          <motion.p 
+            variants={fadeUp}
+            className="text-xl text-slate-600 max-w-2xl mx-auto"
+          >
+            Welcome back, {user?.firstName || 'Author'}! Ready to create your next bestseller?
+          </motion.p>
+        </motion.div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>My Published Books</CardTitle>
-          <CardDescription>
-            Manage your books, view sales, and edit details.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2 mb-4">
-              <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => setFilter('all')}>All Books</Button>
-              <Button variant={filter === 'lowStock' ? 'default' : 'outline'} onClick={() => setFilter('lowStock')}>Low Stock</Button>
-              <Button variant={filter === 'outOfStock' ? 'default' : 'outline'} onClick={() => setFilter('outOfStock')}>Out of Stock</Button>
+        {/* Stats Grid */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6"
+        >
+          {stats.map((stat, index) => (
+            <motion.div key={index} variants={fadeUp}>
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-500 group">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                      <stat.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-slate-900">{stat.value}</div>
+                      <div className="text-xs text-green-600 font-medium">{stat.change}</div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-slate-600">{stat.label}</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Quick Actions */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+        >
+          <motion.h2 
+            variants={fadeUp}
+            className="text-2xl font-bold text-slate-900 mb-6"
+          >
+            Quick Actions
+          </motion.h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {quickActions.map((action, index) => (
+              <motion.div key={index} variants={fadeUp}>
+                <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-500 group cursor-pointer">
+                  <Link href={action.href}>
+                    <CardContent className="p-6 text-center">
+                      <div className={`w-16 h-16 bg-gradient-to-r ${action.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                        <action.icon className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="font-bold text-slate-900 mb-2">{action.title}</h3>
+                      <p className="text-sm text-slate-600">{action.description}</p>
+                    </CardContent>
+                  </Link>
+                </Card>
+              </motion.div>
+            ))}
           </div>
-          {authorBooks.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="hidden md:table-cell">Price</TableHead>
-                  <TableHead className="hidden md:table-cell">Stock</TableHead>
-                  <TableHead>Sales</TableHead>
-                  <TableHead>Avg. Rating</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredBooks.map((book) => (
-                  <TableRow key={book.id}>
-                    <TableCell className="font-medium">{book.title}</TableCell>
-                    <TableCell className="hidden md:table-cell">${book.price.toFixed(2)}</TableCell>
-                    <TableCell className="hidden md:table-cell">{book.stock}</TableCell>
-                    <TableCell>{bookSales[book.id] || 0}</TableCell>
-                    <TableCell>
-                      {bookReviews[book.id]?.count > 0 ? (
-                        <Link href={`/author/reviews/${book.id}`} className="flex items-center gap-1 hover:underline">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span>{bookReviews[book.id].average.toFixed(1)}</span>
-                          <span className="text-xs text-muted-foreground">({bookReviews[book.id].count})</span>
-                        </Link>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">No reviews</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`/author/edit-book/${book.id}`}>
-                            <Pencil className="mr-2 h-3 w-3"/>
-                            Edit
-                        </Link>
+        </motion.div>
+
+        {/* Recent Books Performance */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+        >
+          <motion.h2 
+            variants={fadeUp}
+            className="text-2xl font-bold text-slate-900 mb-6"
+          >
+            Recent Books Performance
+          </motion.h2>
+          <motion.div variants={fadeUp}>
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {recentBooks.map((book) => (
+                    <div key={book.id} className="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+                          <BookOpen className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-slate-900">{book.title}</h4>
+                          <div className="flex items-center space-x-4 text-sm text-slate-600">
+                            <span className="flex items-center">
+                              <TrendingUp className="w-4 h-4 mr-1" />
+                              {book.sales} sales
+                            </span>
+                            <span className="flex items-center">
+                              <DollarSign className="w-4 h-4 mr-1" />
+                              {book.revenue}
+                            </span>
+                            <span className="flex items-center">
+                              <Star className="w-4 h-4 mr-1 text-yellow-500" />
+                              {book.rating}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Details
                       </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-             <div className="text-center py-10 border-2 border-dashed rounded-lg">
-                <h3 className="text-xl font-headline font-semibold">You haven't published any books yet.</h3>
-                <p className="text-muted-foreground mt-2 mb-4">Click the button below to get started.</p>
-                <Button asChild>
-                    <Link href="/author/publish">
-                        <BookUp className="mr-2" />
-                        Publish Your First Book
-                    </Link>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
+
+        {/* Call to Action */}
+        <motion.div 
+          initial="initial"
+          animate="animate"
+          variants={fadeUp}
+          className="text-center"
+        >
+          <Card className="bg-gradient-to-r from-purple-600 to-pink-600 border-0 shadow-2xl">
+            <CardContent className="p-8 text-white">
+              <h3 className="text-2xl font-bold mb-4">Ready to Write Your Next Bestseller?</h3>
+              <p className="text-purple-100 mb-6">
+                Use our AI-powered tools to get inspiration, analyze trends, and create compelling content.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+                  <Link href="/author/publish">
+                    <PlusCircle className="w-5 h-5 mr-2" />
+                    Start Writing
+                  </Link>
                 </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
+                  <Link href="/ai/suggestions?role=author">
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    Get AI Ideas
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 }

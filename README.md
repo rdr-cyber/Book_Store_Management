@@ -1,6 +1,7 @@
 <div align="center">
   <h1>ShelfWise</h1>
   <p>A Modern Book Marketplace for Readers and Authors</p>
+  <p>Created by <strong>rdr-cyber</strong></p>
 </div>
 
 ## Introduction

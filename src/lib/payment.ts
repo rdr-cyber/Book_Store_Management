@@ -1,0 +1,252 @@
+import Razorpay from 'razorpay';
+import crypto from 'crypto';
+import { Order, PaymentIntent } from './types';
+import { VPNDetector } from '../services/vpn-detector';
+
+// Initialize Razorpay
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID!,
+  key_secret: process.env.RAZORPAY_KEY_SECRET!,
+});
+
+export class PaymentService {
+  
+  // Create a Razorpay order
+  static async createRazorpayOrder(
+    amount: number, 
+    currency: string = 'INR',
+    receipt: string,
+    notes?: Record<string, string>
+  ) {
+    try {
+      const options = {
+        amount: amount * 100, // Razorpay expects amount in paise
+        currency,
+        receipt,
+        notes: notes || {},
+      };
+
+      const order = await razorpay.orders.create(options);
+      return order;
+    } catch (error) {
+      console.error('Error creating Razorpay order:', error);
+      throw error;
+    }
+  }
+
+  // Verify Razorpay payment signature
+  static verifyPaymentSignature(
+    orderId: string,
+    paymentId: string,
+    signature: string
+  ): boolean {
+    try {
+      const body = orderId + '|' + paymentId;
+      const expectedSignature = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+        .update(body.toString())
+        .digest('hex');
+
+      return expectedSignature === signature;
+    } catch (error) {
+      console.error('Error verifying payment signature:', error);
+      return false;
+    }
+  }
+
+  // Process payment with security checks
+  static async processPayment(
+    orderData: Order,
+    paymentMethod: string,
+    userIP?: string,
+    userAgent?: string
+  ): Promise<{
+    success: boolean;
+    orderId?: string;
+    error?: string;
+    securityBlock?: boolean;
+  }> {
+    try {
+      // Perform VPN and security checks
+      const vpnResult = await VPNDetector.detectVPN(userIP);
+      const securityChecks = await VPNDetector.performSecurityChecks(userAgent);
+
+      // Block payment if VPN is detected with high risk
+      if (VPNDetector.shouldBlockPayment(vpnResult)) {
+        return {
+          success: false,
+          error: 'Payment blocked due to security concerns. Please disable VPN and try again.',
+          securityBlock: true
+        };
+      }
+
+      // Block payment if suspicious activity detected
+      if (securityChecks.suspicious) {
+        return {
+          success: false,
+          error: `Payment blocked: ${securityChecks.reasons.join(', ')}`,
+          securityBlock: true
+        };
+      }
+
+      // Create Razorpay order
+      const razorpayOrder = await this.createRazorpayOrder(
+        orderData.totalAmount,
+        'INR',
+        `order_${orderData.id}`,
+        {
+          orderId: orderData.id,
+          userId: orderData.userId,
+          paymentMethod: paymentMethod
+        }
+      );
+
+      return {
+        success: true,
+        orderId: razorpayOrder.id
+      };
+
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      return {
+        success: false,
+        error: 'Payment processing failed. Please try again.'
+      };
+    }
+  }
+
+  // Handle payment success callback
+  static async handlePaymentSuccess(
+    razorpayOrderId: string,
+    razorpayPaymentId: string,
+    razorpaySignature: string
+  ): Promise<{
+    verified: boolean;
+    error?: string;
+  }> {
+    try {
+      const isValidSignature = this.verifyPaymentSignature(
+        razorpayOrderId,
+        razorpayPaymentId,
+        razorpaySignature
+      );
+
+      if (!isValidSignature) {
+        return {
+          verified: false,
+          error: 'Payment verification failed'
+        };
+      }
+
+      return {
+        verified: true
+      };
+
+    } catch (error) {
+      console.error('Error handling payment success:', error);
+      return {
+        verified: false,
+        error: 'Payment verification error'
+      };
+    }
+  }
+
+  // Get payment status
+  static async getPaymentStatus(paymentId: string) {
+    try {
+      const payment = await razorpay.payments.fetch(paymentId);
+      return payment;
+    } catch (error) {
+      console.error('Error fetching payment status:', error);
+      throw error;
+    }
+  }
+
+  // Refund payment
+  static async refundPayment(paymentId: string, amount?: number) {
+    try {
+      const refundData: any = {
+        payment_id: paymentId,
+      };
+
+      if (amount) {
+        refundData.amount = amount * 100; // Convert to paise
+      }
+
+      const refund = await razorpay.payments.refund(paymentId, refundData);
+      return refund;
+    } catch (error) {
+      console.error('Error processing refund:', error);
+      throw error;
+    }
+  }
+
+  // Generate payment options for frontend
+  static generatePaymentOptions(
+    orderId: string,
+    amount: number,
+    currency: string = 'INR',
+    userEmail: string,
+    userName: string,
+    userPhone?: string
+  ) {
+    return {
+      key: process.env.RAZORPAY_KEY_ID,
+      amount: amount * 100, // Amount in paise
+      currency,
+      name: 'Book Store Management',
+      description: 'Purchase books from our online store',
+      order_id: orderId,
+      handler: function (response: any) {
+        // This will be handled by the frontend
+        console.log('Payment successful:', response);
+      },
+      prefill: {
+        name: userName,
+        email: userEmail,
+        contact: userPhone || '',
+      },
+      notes: {
+        address: 'Book Store Corporate Office',
+      },
+      theme: {
+        color: '#3399cc',
+      },
+      method: {
+        netbanking: true,
+        card: true,
+        upi: true,
+        wallet: true,
+      },
+    };
+  }
+
+  // Validate payment amount
+  static validatePaymentAmount(amount: number): boolean {
+    return amount > 0 && amount <= 500000; // Max ₹5,00,000 per transaction
+  }
+
+  // Calculate processing fees
+  static calculateProcessingFees(amount: number, paymentMethod: string): number {
+    // Standard Razorpay fees
+    const rates = {
+      upi: 0.0, // No fees for UPI below ₹2000
+      card: 0.0236, // 2.36% for cards
+      netbanking: 0.019, // 1.9% for net banking
+      wallet: 0.024, // 2.4% for wallets
+    };
+
+    let rate = rates.card; // Default rate
+    
+    if (paymentMethod === 'upi' && amount <= 2000) {
+      rate = rates.upi;
+    } else if (rates[paymentMethod as keyof typeof rates]) {
+      rate = rates[paymentMethod as keyof typeof rates];
+    }
+
+    const fees = amount * rate;
+    const gst = fees * 0.18; // 18% GST on processing fees
+    
+    return Math.round((fees + gst) * 100) / 100; // Round to 2 decimal places
+  }
+}

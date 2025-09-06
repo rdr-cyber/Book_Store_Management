@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AuthProvider } from "@/context/AuthContext";
+import DevNotification from "@/components/DevNotification";
 
 export const metadata: Metadata = {
   title: "ShelfWise - Your Online Bookstore",
@@ -38,12 +40,15 @@ export default function RootLayout({
         />
       </head>
       <body className={cn("font-body antialiased")}>
-        <div className="relative flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-        <Toaster />
+        <AuthProvider>
+          <DevNotification />
+          <div className="relative flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

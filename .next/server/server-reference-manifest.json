@@ -1,14 +1,14 @@
 {
   "node": {
-    "40589759d729c06efcd97dfc68c6fd02a51cfc7783": {
+    "606e8608d16d7a643d9fb2dbe25e6610fca043b782": {
       "workers": {
-        "app/checkout/page": {
-          "moduleId": "[project]/.next-internal/server/app/checkout/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/services/email.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+        "app/ai/suggestions/page": {
+          "moduleId": "[project]/.next-internal/server/app/ai/suggestions/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/ai/suggestions/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
       "layer": {
-        "app/checkout/page": "action-browser"
+        "app/ai/suggestions/page": "action-browser"
       }
     }
   },
