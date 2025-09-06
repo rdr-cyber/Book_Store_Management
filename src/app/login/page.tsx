@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,14 @@ import { toast } from '@/hooks/use-toast';
 import type { UserRole } from '@/lib/types';
 import { motion } from 'framer-motion';
 
-export default function LoginPage() {
+// Separate component for search params to enable Suspense
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const userType = searchParams.get('role') || 'reader';
+  return <LoginFormComponent userType={userType} />;
+}
+
+function LoginFormComponent({ userType }: { userType: string }) {
   const [readerFormData, setReaderFormData] = useState({
     email: '',
     password: ''
@@ -29,8 +36,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState<Record<UserRole, boolean>>({ reader: false, author: false, admin: false });
   const [errors, setErrors] = useState<Record<UserRole, Record<string, string>>>({ reader: {}, author: {}, admin: {} });
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const userType = searchParams.get('role') || 'reader';
 
   const validateForm = (formData: typeof readerFormData, role: UserRole) => {
     const newErrors: Record<string, string> = {};
@@ -87,7 +92,7 @@ export default function LoginPage() {
         });
         
         // Redirect based on role
-        const redirectUrl = searchParams.get('redirect');
+        const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
         if (redirectUrl) {
           router.push(redirectUrl);
         } else {
@@ -444,5 +449,21 @@ export default function LoginPage() {
         </motion.div>
       </motion.div>
     </div>
+  );
+}
+
+// Main component that wraps the content in Suspense
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

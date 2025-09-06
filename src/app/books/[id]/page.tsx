@@ -12,14 +12,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import BookCard from "@/components/BookCard";
-import { useState, useEffect, useMemo, FormEvent } from "react";
+import { useState, useEffect, useMemo, FormEvent, Suspense } from "react";
 import type { Book, User, Review, Gift as GiftType } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
-export default function BookDetailPage() {
-  const router = useRouter();
+// Component that uses searchParams
+function BookDetailContent() {
   const searchParams = useSearchParams();
+  const fromLibrary = searchParams.get('fromLibrary') === 'true';
+  return <BookDetailComponent fromLibrary={fromLibrary} />;
+}
+
+// Main component logic
+function BookDetailComponent({ fromLibrary }: { fromLibrary: boolean }) {
+  const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
   const id = params.id as string;
@@ -39,9 +46,6 @@ export default function BookDetailPage() {
   const [replyContent, setReplyContent] = useState("");
   const [reviewFilter, setReviewFilter] = useState<'all' | 'my'>('all');
   const [isFollowing, setIsFollowing] = useState(false);
-
-
-  const fromLibrary = searchParams.get('fromLibrary') === 'true';
 
   useEffect(() => {
     setHasMounted(true);
@@ -499,5 +503,21 @@ export default function BookDetailPage() {
       )}
 
     </div>
+  );
+}
+
+// Main page component with Suspense
+export default function BookDetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <BookOpen className="h-8 w-8 animate-pulse mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Loading book details...</p>
+        </div>
+      </div>
+    }>
+      <BookDetailContent />
+    </Suspense>
   );
 }

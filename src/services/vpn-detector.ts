@@ -13,59 +13,79 @@ export class VPNDetector {
 
   static async detectVPN(ip?: string): Promise<VPNDetectionResult> {
     try {
-      // Get client IP if not provided
-      const clientIP = ip || await this.getClientIP();
-      
-      if (!clientIP) {
+      // Provide a safe default for development/deployment
+      if (!ip || ip === 'unknown') {
         return {
           isVPN: false,
           risk: 'low'
         };
       }
 
-      // Check against VPN detection service
-      const response = await fetch(
-        `${this.VPN_DETECTION_API}${clientIP}?key=${this.API_KEY}&vpn=1&asn=1&risk=1`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      // Basic IP validation
+      if (!this.isValidIP(ip)) {
+        return {
+          isVPN: false,
+          risk: 'low'
+        };
+      }
+
+      // Skip external API calls in serverless environments or when API key is missing
+      if (!this.API_KEY || process.env.NODE_ENV === 'production') {
+        return this.basicVPNCheck(ip);
+      }
+
+      // Only try external API in development with proper config
+      try {
+        const response = await fetch(
+          `${this.VPN_DETECTION_API}${ip}?key=${this.API_KEY}&vpn=1&asn=1&risk=1`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            // Add timeout to prevent hanging
+            signal: AbortSignal.timeout(5000)
+          }
+        );
+
+        if (!response.ok) {
+          return this.basicVPNCheck(ip);
         }
-      );
 
-      if (!response.ok) {
-        // Fallback to basic checks if API fails
-        return this.basicVPNCheck(clientIP);
-      }
+        const data = await response.json();
+        const ipData = data[ip];
 
-      const data = await response.json();
-      const ipData = data[clientIP];
+        if (!ipData) {
+          return this.basicVPNCheck(ip);
+        }
 
-      if (!ipData) {
+        const isVPN = ipData.proxy === 'yes' || ipData.vpn === 'yes';
+        const risk = this.calculateRisk(ipData);
+
         return {
-          isVPN: false,
-          risk: 'low'
+          isVPN,
+          country: ipData.country,
+          isp: ipData.isp,
+          risk
         };
+      } catch (apiError) {
+        // Fallback to basic check if API fails
+        return this.basicVPNCheck(ip);
       }
-
-      const isVPN = ipData.proxy === 'yes' || ipData.vpn === 'yes';
-      const risk = this.calculateRisk(ipData);
-
-      return {
-        isVPN,
-        country: ipData.country,
-        isp: ipData.isp,
-        risk
-      };
     } catch (error) {
-      // Handle VPN detection errors gracefully
-      // Return safe default on error
+      // Return safe default on any error
       return {
-        isVPN: true, // Err on the side of caution
-        risk: 'high'
+        isVPN: false, // Changed to false for better user experience
+        risk: 'low'
       };
     }
+  }
+
+  private static isValidIP(ip: string): boolean {
+    // Basic IP validation
+    const ipv4Regex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+    return ipv4Regex.test(ip) || ipv6Regex.test(ip);
   }
 
   private static async getClientIP(): Promise<string | null> {
