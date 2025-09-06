@@ -198,31 +198,4 @@ export default function BookForm({ initialData, isEditing = false, onSuccess }: 
       </CardContent>
     </Card>
   );
-}-gray-500 mt-1\">
-              {formData.description.length}/500 characters
-            </p>
-          </div>
-
-          <div className=\"flex justify-end space-x-4\">
-            <Button type=\"button\" variant=\"outline\" disabled={loading}>
-              Cancel
-            </Button>
-            <Button type=\"submit\" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />
-                  {isEditing ? 'Updating...' : 'Publishing...'}
-                </>
-              ) : (
-                <>
-                  <Upload className=\"mr-2 h-4 w-4\" />
-                  {isEditing ? 'Update Book' : 'Publish Book'}
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-  );
 }
