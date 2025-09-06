@@ -78,7 +78,6 @@ export const POST = withAuth(async (request: NextRequest, user) => {
     // Get client information for security checks
     const userIP = request.headers.get('x-forwarded-for') || 
                   request.headers.get('x-real-ip') || 
-                  request.ip || 
                   'unknown';
     const userAgent = request.headers.get('user-agent') || '';
 

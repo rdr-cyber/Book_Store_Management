@@ -30,9 +30,10 @@ export async function GET(
 // PUT update book (authors only, can only update their own books)
 export const PUT = withRole(['author'])(async (
   request: NextRequest,
-  user,
-  { params }: { params: { id: string } }
+  user: any,
+  context: { params: { id: string } }
 ) => {
+  const { params } = context;
   try {
     const body = await request.json();
     const {

@@ -115,6 +115,10 @@ export const signInUser = async (email: string, password: string): Promise<AuthU
     }
 
     // Verify password
+    if (!user.password) {
+      throw new Error('User password not found');
+    }
+    
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw new Error('Invalid password');

@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     // Get client IP
     const userIP = request.headers.get('x-forwarded-for') || 
                   request.headers.get('x-real-ip') || 
-                  request.ip || 
                   'unknown';
 
     // Perform VPN detection
