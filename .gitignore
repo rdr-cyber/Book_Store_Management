@@ -46,3 +46,45 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# Cleanup: Prevent unwanted files
+*.tmp
+*.temp
+*.old
+*.backup
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Log files
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Duplicate directories
+Book_Store_Management/

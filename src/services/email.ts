@@ -92,18 +92,26 @@ function generateOrderConfirmationHtml(orderDetails: OrderDetails): string {
 }
 
 export async function sendOrderConfirmationEmail({ email, orderDetails }: EmailPayload): Promise<void> {
-  // In a real app, you'd use a service like SendGrid, Resend, etc. here.
-  // For this demo, we'll just log the email to the console.
+  // In a real app, you'd use a service like SendGrid, Resend, etc.
+  // For demo purposes, we simulate email sending
   
-  console.log('--- SIMULATING SENDING EMAIL ---');
-  console.log('To:', email);
-  console.log('From: no-reply@shelfwise.com');
-  console.log('Subject:', `Your ShelfWise Order Confirmation #${orderDetails.orderId}`);
-  console.log('Body (HTML):');
-  // We log the raw HTML to show what would be sent.
-  console.log(generateOrderConfirmationHtml(orderDetails));
-  console.log('--- END OF SIMULATED EMAIL ---');
-  
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  try {
+    // Simulate email service call
+    // const emailService = new EmailService();
+    // await emailService.send({
+    //   to: email,
+    //   from: 'no-reply@shelfwise.com',
+    //   subject: `Your ShelfWise Order Confirmation #${orderDetails.orderId}`,
+    //   html: generateOrderConfirmationHtml(orderDetails)
+    // });
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // In demo mode, we silently succeed
+    // In production, integrate with your preferred email service
+  } catch (error) {
+    // Handle email sending errors gracefully
+    throw new Error('Failed to send confirmation email');
+  }
 }

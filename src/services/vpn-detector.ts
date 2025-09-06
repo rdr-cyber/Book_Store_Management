@@ -59,7 +59,7 @@ export class VPNDetector {
         risk
       };
     } catch (error) {
-      console.error('VPN detection error:', error);
+      // Handle VPN detection errors gracefully
       // Return safe default on error
       return {
         isVPN: true, // Err on the side of caution
@@ -74,7 +74,7 @@ export class VPNDetector {
       const data = await response.json();
       return data.ip;
     } catch (error) {
-      console.error('Error getting client IP:', error);
+      // Handle IP retrieval error gracefully
       return null;
     }
   }
