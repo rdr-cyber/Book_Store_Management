@@ -1,7 +1,8 @@
 import PersonalizedSuggestionsForm from "@/components/PersonalizedSuggestionsForm";
 
-export default function SuggestionsPage({ searchParams }: { searchParams: { role: string }}) {
-  const role = searchParams.role || 'reader';
+export default async function SuggestionsPage({ searchParams }: { searchParams: Promise<{ role?: string }> }) {
+  const resolvedSearchParams = await searchParams;
+  const role = resolvedSearchParams.role || 'reader';
 
   const pageDetails = {
     reader: {
