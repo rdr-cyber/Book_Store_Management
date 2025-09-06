@@ -3,11 +3,14 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   typescript: {
-    ignoreBuildErrors: true, // Ignore TypeScript errors during build for deployment
+    ignoreBuildErrors: false, // Enable TypeScript checking for better code quality
   },
   eslint: {
-    ignoreDuringBuilds: true, // Ignore ESLint errors during build for deployment
+    ignoreDuringBuilds: false, // Enable ESLint checking for better code quality
   },
+  // Fix workspace root warning
+  outputFileTracingRoot: __dirname,
+  
   images: {
     remotePatterns: [
       {
@@ -36,14 +39,40 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  
   // Optimize for production
   poweredByHeader: false,
   compress: true,
+  
   // Performance optimizations
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react'],
   },
+  
+  // Handle webpack configuration for AI dependencies
+  webpack: (config: any, { isServer }: { isServer: boolean }) => {
+    // Ignore AI-related modules that cause warnings in production
+    config.externals = config.externals || [];
+    
+    if (isServer) {
+      config.externals.push({
+        '@opentelemetry/exporter-jaeger': 'commonjs @opentelemetry/exporter-jaeger',
+        '@genkit-ai/firebase': 'commonjs @genkit-ai/firebase',
+      });
+    }
+    
+    // Handle handlebars warnings
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      crypto: false,
+    };
+    
+    return config;
+  },
+  
   // Handle missing environment variables gracefully
   env: {
     CUSTOM_BUILD_ID: process.env.NODE_ENV || 'development',
