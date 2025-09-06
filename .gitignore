@@ -17,6 +17,7 @@
 src/home_page_logo.png
 
 # next.js
+/.next/
 /out/
 
 # production
