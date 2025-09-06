@@ -1,22 +1,6 @@
 {
-  "name": "shelfwise-book-store",
   "version": 2,
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
-  },
-  "functions": {
-    "src/app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "regions": ["iad1"],
-  "framework": "nextjs",
-  "buildCommand": "next build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "devCommand": "next dev --port $PORT",
+  "name": "shelfwise-bookstore",
   "headers": [
     {
       "source": "/(.*)",
