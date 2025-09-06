@@ -2,7 +2,37 @@
   <h1>ShelfWise</h1>
   <p>A Modern Book Marketplace for Readers and Authors</p>
   <p>Created by <strong>rdr-cyber</strong></p>
+  
+  [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rdr-cyber/Book_Store_Management)
+  [![Live Demo](https://img.shields.io/badge/Live-Demo-success)](https://your-app-url.vercel.app)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 </div>
+
+## 🚀 Live Demo
+
+Experience ShelfWise live at: [https://your-app-url.vercel.app](https://your-app-url.vercel.app)
+
+## ⚡ Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/rdr-cyber/Book_Store_Management.git
+
+# Navigate to project directory
+cd Book_Store_Management
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your configuration
+
+# Run development server
+npm run dev
+```
+
+Open [http://localhost:9002](http://localhost:9002) to view the application.
 
 ## Introduction
 
