@@ -29,7 +29,7 @@ import {
   Circle
 } from "lucide-react";
 import Image from "next/image";
-import HomePageLogo from "@/home_page_logo.png";
+// import HomePageLogo from "@/home_page_logo.png"; // Commented out - file not found
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useState, useEffect, useRef } from 'react';
 
@@ -879,14 +879,14 @@ export default function Home() {
                     ease: "easeInOut"
                   }}
                 >
-                  <Image
-                    src={HomePageLogo}
-                    width={600}
-                    height={480}
-                    alt="ShelfWise Revolutionary Platform"
-                    className="rounded-2xl shadow-2xl"
-                    placeholder="blur"
-                  />
+                  {/* Placeholder for ShelfWise Platform Showcase */}
+                  <div className="w-full h-80 bg-gradient-to-br from-cyan-500/20 via-blue-600/20 to-purple-600/20 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-xl flex items-center justify-center">
+                    <div className="text-center">
+                      <BookOpen className="w-20 h-20 text-cyan-400 mx-auto mb-4" />
+                      <h3 className="text-2xl font-bold text-white mb-2">ShelfWise Platform</h3>
+                      <p className="text-gray-300">Revolutionary Book Marketplace</p>
+                    </div>
+                  </div>
                 </motion.div>
                 
                 {/* Holographic Overlay */}
